@@ -117,26 +117,50 @@ depender de una caja cerrada; todo se publica como código libre con documentaci
 ### 8.1 Hardware
 
 - **Radxa Zero 3W** (2-4 GB RAM es suficiente; la cantidad exacta la decide el constructor).
-- **Riverdi RVT70HSHNWC00-B** por micro-HDMI → HDMI y táctil por USB.
-- **Fuente**: 12 V de la línea de la llave → protección (fusible, TVS para transitorios tipo ISO 7637-2 /
-  load dump, protección contra inversión) → buck a 5 V para la Zero; la Riverdi acepta 7-30 V (puede ir por
-  su propia rama protegida). Debe soportar la caída de voltaje al arrancar el motor sin reiniciar
-  (buck-boost o condensador de respaldo). La falla número uno de las pantallas comerciales de moto es la
-  alimentación.
-- **Retención de apagado (mi decisión, ver §13)**: al cortar la llave, un supercondensador o
-  circuito de retención mantiene viva la Zero unos segundos para que Android se apague limpio (evita
-  corromper el almacenamiento y perder odómetro/trip). La Zero detecta "llave OFF" por un pin, guarda y se
-  apaga; después el consumo cae a cero. No es reposo: es un apagado completo con energía prestada.
-  Duración: se mide en la Fase 1 cuánto tarda Android 11 en apagarse en la Zero y se dimensiona con margen
-  (orden esperado 10-30 s, sin verificar). Además, el odómetro y el trip se guardan de forma transaccional
-  cada pocos segundos, para que un corte brusco pierda como máximo ese intervalo aunque la retención falle.
+- **Riverdi RVT70HSHNWC00-B** por micro-HDMI → HDMI y táctil por USB. Se alimenta por su conector **J5
+  "PWM & POWER"** (hoja de datos Rev 1.6: pines 1-2 GND, 3 habilitación activa en alto, 4 PWM de luz de
+  fondo 3.3 V 1-10 kHz, 5-6 VDD 7-30 V) con **SW6 en PWM externo**: la Zero enciende/apaga la pantalla y
+  controla el brillo (gestión térmica, día/noche). Conector RT1 para sensor de luz ambiente opcional.
+  **Antes de conectar la Zero a J5 se verifica con multímetro que pines 3 y 4 sean entradas** (hay placas
+  RTD2662 de otros fabricantes donde son salidas).
+- **Unidad única (decisión del dueño)**: Zero, fuente y Riverdi van en **una sola carcasa**; desde la moto
+  llega **un solo cable** (batería, llave, tierra y, en la Fase 2, las señales del tablero). La Zero no se
+  alimenta de la placa de la pantalla (no tiene salida de 5 V documentada).
+- **Fuente propia (decisión del dueño, subproyecto)** dentro de la unidad: batería → fusible 5 A cerca de la
+  batería → protección (inversión, TVS para transitorios tipo ISO 7637-2 / load dump) → interruptor de
+  retención → (a) 12 V protegidos a J5 de la Riverdi y (b) buck automotriz a 5 V / 3 A para la Zero. Debe
+  soportar la caída de voltaje al arrancar el motor sin reiniciar (buck-boost o condensador de respaldo). La
+  falla número uno de las pantallas comerciales de moto es la alimentación. Presupuesto orientativo
+  US$15-25. Se diseña y arma entre la Fase 0 y la llegada de la Zero (2026-11-15). Se descartó la CarPiHAT
+  PRO 5 (hecha para Raspberry Pi, sin probar en la Zero, consume <1 mA apagada).
+- **Retención de apagado con la batería (sin supercondensador)**: la señal de llave (12 V con llave del
+  conector del tablero, o de la luz de la placa si se confirma que enciende siempre con llave) enciende el
+  interruptor; la Zero lo mantiene encendido por un pin; al quitar la llave la Zero lo detecta por otro pin,
+  guarda y se apaga, y al terminar suelta el interruptor: consumo **cero** después. No hay límite de tiempo
+  para el apagado. En la Fase 1, si la imagen de Radxa no permite apagarse sola por el pin, se usa un
+  apagado con tiempo fijo y el apagado limpio llega con la imagen propia. Además, el odómetro y el trip se
+  guardan de forma transaccional cada pocos segundos, para que un corte brusco pierda como máximo ese
+  intervalo.
 - **Placa de interfaz moto → Zero** (diseño final): optoacopladores o divisores con protección para cada
   señal de 12 V, contador por hardware o captura para pulsos (velocidad/RPM si llegan como pulsos) y
   transceptor en modo solo recepción si el conector lleva un bus (CAN o K-line). Su diseño exacto depende
   de la Fase 0.
-- **Carcasa**: impresa en 3D en ASA (resistente a UV/calor) de color claro, sellada contra lluvia, con
-  visera; montaje provisional en Fase 1 y sobre la base original en Fase 2. Sensor de temperatura (NTC)
-  dentro de la carcasa.
+- **Carcasa**: impresa en 3D en ASA (resistente a UV/calor) de color claro, con visera; montaje
+  provisional en Fase 1 y sobre la base original en Fase 2. Sensor de temperatura (NTC) dentro de la
+  carcasa.
+- **A prueba de agua (requisito del dueño; la humedad mató el tablero original)**:
+  - Carcasa cerrada **sin entradas de aire**; el calor sale por conducción (disipador de la Zero y de la
+    fuente apoyados en una placa trasera de aluminio que forma parte de la carcasa), no por ventilación.
+  - Vidrio de la Riverdi sellado a la carcasa con empaque o junta continua (silicona/espuma de celda
+    cerrada); unión de las mitades de la carcasa con empaque y tornillería de seguridad.
+  - **Un solo conector hacia la moto, automotriz sellado** (tipo Deutsch DT o Superseal, IP67 o mejor),
+    nada de cables pasando por agujeros sin prensaestopas.
+  - **Membrana de ventilación** (tipo Gore) que iguala presión sin dejar pasar agua: evita que los cambios
+    de temperatura "bombeen" humedad hacia adentro y empañen el vidrio.
+  - Bolsita desecante reemplazable y **barniz protector (conformal coating)** en la fuente, la Zero y las
+    placas de interfaz.
+  - Prueba de aceptación: manguera o lluvia simulada sin entrada de agua, y ciclo calor/frío sin
+    condensación interna.
 
 ### 8.2 Software en la Zero
 
@@ -278,7 +302,10 @@ todos los estados. Maquetas: `.superpowers/brainstorm/` (layout-v2.html).
 
 - Licencia de RevDash: **AGPL-3.0** (como los otros proyectos de hardware del dueño); piezas compartidas con
   RevScope en Apache-2.0. open-headunit es AGPL, compatible.
-- Retención de apagado con supercondensador para apagado limpio sin consumo fantasma.
+- Retención de apagado con la batería e interruptor que se suelta al terminar (reemplazó la idea del
+  supercondensador; aprobado por el dueño junto con la fuente propia).
+- Disipación por conducción hacia una placa trasera de aluminio, membrana de ventilación y conector Deutsch
+  DT/Superseal para cumplir la estanqueidad.
 - ESP32 por USB como fuente provisional de señales en la Fase 1.
 - Gestión térmica por NTC con umbrales ~60/65-70 °C.
 - RevDash nunca transmite al bus de la moto (solo escucha).
