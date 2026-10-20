@@ -153,8 +153,8 @@ depender de una caja cerrada; todo se publica como código libre con documentaci
 - **Gestión térmica**: con el NTC, bajar el brillo de la luz de fondo por encima de ~60 °C y apagarla
   (dejando el sistema vivo) cerca de 65-70 °C, que es el límite de la Riverdi.
 - **Odómetro y trip propios**: el tablero original ya no cuenta; RevDash calcula distancia a partir de la
-  velocidad, la persiste de forma segura ante cortes y permite fijar el valor inicial (13 151 km aprox. al
-  2026-10-19; el valor exacto lo da el dueño).
+  velocidad, la persiste de forma segura ante cortes y permite fijar el valor inicial (unos 10 780 km según
+  el dueño el 2026-10-19; el valor exacto lo confirmará con una app que muestra el odómetro).
 
 ### 8.3 Imagen propia de Android (Fase 2)
 

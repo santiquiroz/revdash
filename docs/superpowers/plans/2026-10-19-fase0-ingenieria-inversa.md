@@ -19,7 +19,7 @@
 - **Solo escuchar**: el firmware nunca transmite al bus de la moto (TWAI en `TWAI_MODE_LISTEN_ONLY`; K-line solo RX; ningún GPIO conectado a la moto se configura como salida).
 - **Nunca 12 V directo a un pin**: toda entrada pasa por el divisor de `docs/fase0/sondas.md`.
 - **Nada se corta en el mazo original**: medición por detrás del conector (back-probing).
-- ESP32 objetivo: **ESP32 clásico (ESP32-WROOM-32 DevKit)**, entorno `esp32dev`. Si el ESP32 del dueño es un C3 (sin PCNT), el conteo usa interrupciones de GPIO; se confirma con el dueño antes de la Tarea 3.
+- ESP32 objetivo: **ESP32 clásico**, entorno `esp32dev`. Confirmado 2026-10-19 con esptool: el del dueño es un ESP32-D0WD-V3 (rev v3.1, 240 MHz, doble núcleo) con puente USB CP210x (COM6 en su PC). Tiene PCNT y TWAI.
 - Código según la filosofía del dueño: funciones atómicas, baja complejidad ciclomática, sin comentarios de documentación (solo una línea cuando el porqué no es obvio).
 
 ## Review Focus
