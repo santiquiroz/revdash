@@ -54,7 +54,7 @@
   3. Con el analizador (PulseView) y llave ON: accionar una por una direccional izq/der, luz alta, neutro (palanca), interruptor de apagado, botones del tablero; anotar qué pin cambia.
   4. Prueba de testigos al dar llave (check engine y ABS hacen su chequeo de bombillo): registrar qué pin pulsa.
   5. Rueda trasera girando en el soporte central o rodando despacio: buscar el pin con pulsos proporcionales a la velocidad; motor encendido: buscar pulsos proporcionales a RPM.
-  6. Buscar par de cables trenzados o pin con tramas: decodificar en PulseView como CAN (probar 500 y 250 kbps) o UART/K-line (10400 baudios).
+  6. Buscar par de cables trenzados o pin con tramas: decodificar en PulseView como CAN (probar 500 y 250 kbps) o UART/K-line (10400 baudios). Si hay CAN: con el ESP32 grabar `base.rdp` (llave ON sin tocar nada, 30 s) y una captura de la misma duración por cada acción del paso 3; `python tools/diff_can.py --base base.rdp --action <acción>.rdp` lista los bytes que estaban fijos en la base y cambian con la acción.
   7. Pasar al ESP32 con `config.h` ajustado y grabar un viaje con RevScope grabando a la vez (OBD conectado al Vgate) — el OBD es solo referencia de validación.
   8. Correr `calibrate_speed.py` y anotar el factor.
   - Criterio de salida (spec §9): imprescindibles velocidad, direccionales, neutro, luz alta, check engine, ABS y combustible; RPM, modo y botones deseables.
@@ -251,6 +251,51 @@ def test_resample_holds_last_value():
 - [ ] **Step 3: Implementar** con stdlib (`statistics`, `math`, `csv`).
 - [ ] **Step 4: Correr toda la suite** — `python -m pytest tools/tests -v` → PASS.
 - [ ] **Step 5: Commit** — `git add tools && git commit -m "feat: calibración del sensor de velocidad contra la velocidad OBD de RevScope"`
+
+---
+
+### Task 6: Diferencia de tramas CAN entre una captura base y una con acción
+
+Método tomado de https://www.youtube.com/watch?v=tvJHuqfaUSc: grabar sin hacer nada y luego con la acción, y quedarse con lo que solo cambia en la segunda. Los contadores y checksums que ya varían en la base quedan fuera solos.
+
+**Files:**
+- Create: `tools/diff_can.py`, `tools/tests/test_diff_can.py`
+
+**Interfaces:**
+- Consumes: `parse_line`, `Frame` (Tarea 4).
+- Produces:
+  - `byte_values(frames: Iterable[Frame]) -> dict[tuple[str, int], set[str]]` — para cada trama `C`: clave `(id, índice de byte)`, valor = conjunto de bytes vistos (2 hex en mayúsculas). Ignora los demás tipos.
+  - `new_ids(base: Iterable[Frame], action: Iterable[Frame]) -> list[str]` — IDs `C` que aparecen en `action` y no en `base`, ordenados.
+  - `changed_bytes(base_values, action_values) -> list[tuple[str, int, str, list[str]]]` → `(id, byte, valor_en_base, valores_nuevos)` solo para los bytes con **un único valor en la base** que en la acción toman valores distintos de ese; ordenado por `(id, byte)`. Un byte que no existe en la base (trama más corta o ID nuevo) no se reporta aquí.
+  - CLI: `python tools/diff_can.py --base base.rdp --action direccional_izq.rdp` imprime primero los IDs nuevos y luego una línea por byte cambiado: `<id> byte <n>: <base> -> <nuevos separados por espacio>`.
+
+- [ ] **Step 1: Escribir las pruebas que fallan**
+
+```python
+def frames(*lines):
+    return [parse_line(l) for l in lines]
+
+def test_byte_fixed_in_base_and_changed_in_action_is_reported():
+    base = byte_values(frames("C,0,1A0,s,0010", "C,10,1A0,s,0010"))
+    action = byte_values(frames("C,0,1A0,s,0011", "C,10,1A0,s,0010"))
+    assert changed_bytes(base, action) == [("1A0", 1, "10", ["11"])]
+
+def test_counter_varying_in_base_is_ignored():
+    base = byte_values(frames("C,0,1A0,s,01", "C,10,1A0,s,02"))
+    action = byte_values(frames("C,0,1A0,s,03"))
+    assert changed_bytes(base, action) == []
+
+def test_new_id_is_reported():
+    assert new_ids(frames("C,0,1A0,s,00"), frames("C,0,1A0,s,00", "C,0,2B0,s,FF")) == ["2B0"]
+
+def test_non_can_frames_are_ignored():
+    assert byte_values(frames("E,0,3,1", "F,0,0,0")) == {}
+```
+
+- [ ] **Step 2: Correr y verificar que fallan** — `python -m pytest tools/tests/test_diff_can.py -v` → FAIL.
+- [ ] **Step 3: Implementar** con stdlib (`argparse`, `pathlib`).
+- [ ] **Step 4: Correr toda la suite** — `python -m pytest tools/tests -v` → PASS.
+- [ ] **Step 5: Commit** — `git add tools && git commit -m "feat: diferencia de tramas CAN entre captura base y captura con acción"`
 
 ---
 
