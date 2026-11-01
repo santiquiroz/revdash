@@ -97,7 +97,7 @@ La humedad fue lo que mató el tablero original, así que aquí es requisito de 
 
 ## Hoja de ruta
 
-- [ ] **Fase 0 · Ingeniería inversa** del conector del tablero (en curso): primer pinout público de la Apache. Si el conector lleva CAN, cada señal se descubre comparando una captura en reposo con otra mientras se acciona el control (direccional, neutro, luz alta…).
+- [ ] **Fase 0 · Ingeniería inversa** del conector del tablero (en curso): primer pinout público de la Apache. Si el conector lleva CAN, cada señal se descubre comparando una captura en reposo con otra mientras se acciona el control (direccional, neutro, luz alta…). [Guía de campo](docs/fase0/).
 - [ ] **Fase 1 · Pantalla aparte**: la placa llega hacia el 15 de noviembre de 2026 y la pantalla hacia el 6 de diciembre.
 - [ ] **Fase 2 · Reemplazo total**: imagen propia de Android, fuente propia y montaje en la base original.
 - [ ] **Fase 3 · Opcional**: dashcam e IA con la NPU de la placa (avisos de colisión, señales, baches).

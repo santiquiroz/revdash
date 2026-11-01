@@ -43,11 +43,12 @@
 - [ ] **Step 1: `README.md`** — qué es RevDash (resumen de la spec §1, §3), estado ("Fase 0: ingeniería inversa"), enlace a RevScope (`github.com/santiquiroz/revscope`), enlace a la spec y a `docs/fase0/`, licencia AGPL-3.0.
 - [ ] **Step 2: `LICENSE`** — texto AGPL-3.0 oficial descargado de gnu.org, sin cambios.
 - [ ] **Step 3: `docs/fase0/sondas.md`** — circuito por canal, con estos valores:
-  - Digital 12 V → ESP32/analizador: R1 = 22 kΩ en serie desde la señal, R2 = 4.7 kΩ a GND (15 V → 2.64 V; 12 V → 2.11 V), diodo doble Schottky BAT54S a 3.3 V/GND en el nodo, resistencia de 1 kΩ entre el nodo y el pin.
-  - CAN (si existe): CAN-H/CAN-L a un SN65HVD230 alimentado a 3.3 V; su RX a GPIO 22; su TX a GPIO 21 (el controlador en solo-escucha nunca lo pone en dominante). Sin terminación de 120 Ω adicional.
-  - K-line (si existe): mismo divisor que digital, a GPIO 16 (UART2 RX).
-  - Analizador lógico (HiLetgo 24 MHz 8 canales): los mismos divisores; GND común con la moto.
-  - Lista de materiales con cantidades para 8 canales.
+  - El riel de referencia es el pin 3V3 de la ESP32 alimentada por USB; ESP32 y analizador HiLetgo (CY7C68013A, VIH ≈ 2.0 V) comparten sondas y GND con la moto.
+  - Digital 12 V → ESP32/analizador: R1 = 15 kΩ en serie desde la señal, R2 = 4.7 kΩ a GND (factor 0.2386; 10.4 V → 2.48 V, 12 V → 2.86 V, 14.4 V → 3.44 V, 15 V → 3.58 V), BAT54S en el nodo a 3V3/GND y 1 kΩ entre nodo y pin. No usar 22 kΩ/4.7 kΩ: 12 V → 2.11 V, por debajo del VIH del ESP32 (2.475 V). Límite común de entrada 3.6 V (ESP32: VDD + 0.3 V): el divisor lo respeta hasta 15 V.
+  - Lado bajo: pull-up de 10 kΩ a 3V3 y BAT54 con ánodo al nodo/cátodo hacia la señal; señal a masa = 0, flotante o a 12 V = 1. Lógica invertida.
+  - CAN (si existe): CAN-H/CAN-L a un SN65HVD230 alimentado a 3V3; RX a GPIO 22 y analizador; TX a GPIO 21 (solo escucha). Para sesiones solo con analizador, pull-up de 10 kΩ en TX a 3V3. Sin terminación adicional de 120 Ω.
+  - K-line (si existe): sonda digital, a GPIO 16 (UART2 RX).
+  - Lista de materiales con cantidades para 8 canales digitales, 4 de lado bajo y 1 CAN.
 - [ ] **Step 4: `docs/fase0/README.md`** — procedimiento de campo en orden:
   1. Fotografiar el conector y numerar los pines (vista desde el lado de los cables).
   2. Con multímetro, llave OFF/ON: identificar GND, +12 V permanente, +12 V con llave.
