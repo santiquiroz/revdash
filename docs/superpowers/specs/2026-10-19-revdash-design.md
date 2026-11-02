@@ -186,8 +186,8 @@ Base: rama `Android11_Radxa_rk12` / `rockchip-r-release.xml` de `radxa/manifests
 de compilación con clang nuevo: hay que corregir). Requiere ~16 GB RAM y ~250 GB de disco (WSL2/Docker en el
 PC del dueño). Contenido: RevDash como launcher, open-headunit preinstalado, servicio de señales con
 permisos, sin apps sobrantes, arranque recortado, actualizaciones OTA por Wi-Fi. Todo reproducible y
-documentado en el repo. open-headunit NO va preinstalado en una imagen que se distribuya: se instala aparte
-(ver §12, riesgo 9).
+documentado en el repo. La imagen personal del dueño puede traer open-headunit preinstalado; los scripts
+publicados lo descargan de su repo al compilar y no se publican imágenes que lo incluyan (ver §12, riesgo 9).
 
 ## 9. Fases
 
@@ -322,8 +322,9 @@ todos los estados. Maquetas: `.superpowers/brainstorm/` (layout-v2.html).
      conecta, se cae o desaparece.
    - La navegación tiene respaldo propio (OSM, o la app del celular hablando con RevDash por BLE), no solo
      Android Auto.
-   - open-headunit queda como componente opcional que instala cada usuario; ni las imágenes ni los
-     releases de RevDash lo incluyen.
+   - Uso propio (el piloto en la Apache): open-headunit se usa sin problema, incluido preinstalado en la
+     imagen personal. Lo que no se hace es publicar imágenes ni releases de RevDash que lo incluyan: cada
+     quien lo instala o lo descarga al compilar.
 
 ## 13. Decisiones mías (revisar)
 
