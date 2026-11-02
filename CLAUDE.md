@@ -8,7 +8,12 @@ Tablero abierto con Android Auto para la TVS Apache RTR 160 4V del dueño. Repo 
 
 ## Estado (2026-11-01)
 
-- Fase 0 (ingeniería inversa del conector del tablero) en curso. Plan de 6 tareas; la Tarea 1 (guía de campo) es la única con contenido, el resto (firmware ESP32, `tools/*.py`) sin empezar.
+- Fase 0 (ingeniería inversa del conector del tablero) en curso. Las 6 tareas del plan tienen código (2026-11-01/02):
+  - Guía de campo y sondas: `docs/fase0/`.
+  - Firmware de sondeo: `firmware/probe/` (`python -m platformio test -e native` con gcc de WinLibs en el PATH; `python -m platformio run -e esp32dev` y `-e esp32dev_selftest` compilan). Falta la prueba de lazo cerrado en banco: puente GPIO 23 → GPIO 34, flashear `esp32dev_selftest`, esperar `F,…,0,≈100000` cada 250 ms.
+  - Herramientas del PC: `tools/` (`python -m pytest tools/tests`): `capture.py` (graba el ESP32), `calibrate_speed.py` (factor de velocidad contra RevScope), `diff_can.py` (diferencia base contra acción; lee RDP1 y candump).
+- RevScope (app Android del dueño, `github.com/santiquiroz/revscope`) gana el modo escucha CAN con el Vgate y 4 herramientas MCP (`escuchar_can`, `listar_capturas_can`, `leer_captura_can`, `diferencia_capturas_can`): Claude en el portátil puede capturar el bus por el OBD desde el celular y comparar capturas. Ver `docs/superpowers/specs/2026-11-01-modo-escucha-can-design.md` en ese repo.
+- Investigación de Android Auto, herramientas CAN y regulación: `docs/investigacion/` y spec §12 (riesgos 7 y 9).
 - Analizador lógico recibido y funcionando en el PC de escritorio (2026-11-01): driver WinUSB instalado, `sigrok-cli --scan` lo ve como "fx2lafw - Saleae Logic with 8 channels" y captura a 1 MHz. Los canales sueltos leen 1. Siguiente paso: llevar portátil + analizador + sondas al garaje y seguir `docs/fase0/README.md`.
 - El tablero original está muerto (humedad / falso contacto en el mazo bajo la chapa, zona de las exploradoras). Las señales siguen llegando al conector.
 - Pendiente del dueño: kilometraje exacto (≈ 10 780 km) para arrancar el odómetro propio.

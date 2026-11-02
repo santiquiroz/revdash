@@ -186,7 +186,8 @@ Base: rama `Android11_Radxa_rk12` / `rockchip-r-release.xml` de `radxa/manifests
 de compilación con clang nuevo: hay que corregir). Requiere ~16 GB RAM y ~250 GB de disco (WSL2/Docker en el
 PC del dueño). Contenido: RevDash como launcher, open-headunit preinstalado, servicio de señales con
 permisos, sin apps sobrantes, arranque recortado, actualizaciones OTA por Wi-Fi. Todo reproducible y
-documentado en el repo.
+documentado en el repo. open-headunit NO va preinstalado en una imagen que se distribuya: se instala aparte
+(ver §12, riesgo 9).
 
 ## 9. Fases
 
@@ -292,11 +293,37 @@ todos los estados. Maquetas: `.superpowers/brainstorm/` (layout-v2.html).
    es cableado directo.
 6. **Corte de energía al quitar la llave**: corrupción del almacenamiento. Mitigado con la retención de
    apagado (§8.1).
-7. **Legalidad en Colombia**: revisar si la revisión técnico-mecánica exige velocímetro, odómetro o testigos
-   del tablero original funcionando. Si lo exige, RevDash debe mostrar esos datos de forma que pase la
-   inspección, o la Fase 2 conserva algo del original. Verificar antes de la Fase 2.
+7. **Legalidad en Colombia** (investigación 2026-11-01; no es asesoría legal):
+   - La revisión técnico-mecánica de motos (NTC 5375:2012, la vigente; la 2024 no se ha adoptado para
+     motos) no revisa velocímetro ni odómetro ni exige tablero original. Sí son defecto B las "luces de
+     tablero de instrumentos" que no funcionen, y defecto A los comandos de luces, direccionales, stop y
+     bocina y las partes flojas o con aristas cortantes.
+   - El formato de la revisión registra el kilometraje (o "NO FUNCIONAL") y ese historial queda en el RUNT:
+     el odómetro de RevDash arranca en el valor real, nunca baja, se guarda también fuera de Android (en el
+     microcontrolador o memoria propia) y deja constancia (foto y acta) del valor al instalar.
+   - El Código de Tránsito (infracción B.23) prohíbe pantallas o proyectores de imagen en la parte delantera
+     con el vehículo en movimiento: en marcha RevDash bloquea video y apps; solo tablero y navegación por
+     maniobras. El alcance exacto de la B.23 para un tablero digital no está aclarado por la autoridad.
+   - RevDash no se mete en los circuitos de luces, direccionales, stop ni bocina (solo los lee), así una
+     falla del tablero no tumba la revisión ni la seguridad.
+   - El velocímetro nunca marca menos que la velocidad real (calibración con margen hacia arriba).
+   - Radios: un equipo solo con Wi-Fi y Bluetooth no se homologa ante la CRC (eso es para equipos con red
+     celular); debe cumplir las reglas de uso libre del espectro de la ANE.
 8. **Android Auto con touch**: open-headunit en Android 11 sin verificar; open-headunit y la vista dividida
    de Android Auto en 740×600 sin verificar.
+9. **Android Auto depende de un certificado ajeno** (investigación 2026-11-01,
+   `docs/investigacion/android-auto.md`): el teléfono solo acepta receptores con certificado de la raíz de
+   Google; Google no ofrece certificación pública a pequeños fabricantes. Los receptores abiertos (aasdk,
+   open-headunit) funcionan con certificados de terceros publicados en sus repos, y Google puede dejar de
+   aceptarlos en cualquier versión de Android Auto (desde la 17.4 ya falla el arranque inalámbrico clásico;
+   open-headunit ofrece Wi-Fi Direct nativo, servidor en modo desarrollador o dongle USB). Consecuencias:
+   - **Regla de arquitectura**: el tablero (velocidad, testigos, direccionales, combustible, odómetro) nunca
+     depende de Android Auto. Se dibuja en la capa propia de RevDash y sigue funcionando si Android Auto no
+     conecta, se cae o desaparece.
+   - La navegación tiene respaldo propio (OSM, o la app del celular hablando con RevDash por BLE), no solo
+     Android Auto.
+   - open-headunit queda como componente opcional que instala cada usuario; ni las imágenes ni los
+     releases de RevDash lo incluyen.
 
 ## 13. Decisiones mías (revisar)
 
