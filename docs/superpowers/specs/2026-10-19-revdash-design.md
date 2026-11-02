@@ -170,6 +170,19 @@ depender de una caja cerrada; todo se publica como código libre con documentaci
 - **open-headunit** (AGPL, `github.com/andreknieriem/open-headunit`, activo, v3.5.0 2026-10-17) para
   recibir Android Auto inalámbrico; se controla por Intents desde la app RevDash. Debe configurarse para no
   declarar canales de audio de medios y voz (ver §12, riesgo 1).
+  - Fork del dueño: `github.com/santiquiroz/open-headunit` (2026-11-02, remoto `upstream` =
+    `andreknieriem/open-headunit`). Regla: cambios pequeños y aislados, y fusionar `upstream` seguido, porque
+    el autor publica arreglos casi cada semana cuando Google cambia algo.
+  - Lo que open-headunit YA trae y no hay que programar: modo launcher; conexión por Intent
+    (`headunit://connect?ip=…`); "Audio Sink Setting" para no recibir el audio (cubre el riesgo 1); DPI y
+    resolución configurables; PiP; y un broadcast de navegación (`NavigationUpdateIntent`, con permiso) con
+    las maniobras de Android Auto, que RevDash puede mostrar en su columna o franja.
+  - Cambios previstos en el fork (solo si las opciones existentes no alcanzan, verificar en Fase 1):
+    1. Margen configurable en la configuración de video que se anuncia al teléfono, para que la interfaz
+       de Android Auto no quede debajo de la columna de instrumentos (distribución C de §10).
+    2. Broadcast de estado de la sesión (conectado, desconectado, error) para que RevDash cambie de estado
+       solo (§10).
+    3. Arranque sin pantallas de configuración ni diálogos, para el modo kiosco.
 - **Servicio de señales**: lee los pines/bus y publica los datos a la app. En Fase 1 (imagen de Radxa) la
   fuente provisional es el ESP32 por USB (§11); en Fase 2 es un servicio de sistema en la imagen propia
   con permisos sobre GPIO/UART (Android no deja a las apps abrir esos dispositivos sin root/permisos de
