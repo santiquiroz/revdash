@@ -85,11 +85,11 @@ depender de una caja cerrada; todo se publica como código libre con documentaci
 |---|---|
 | Forma | Pantalla dedicada de moto ("CarPlay"), no tableta; alimentada por la batería de la moto |
 | Fases | Fase 1: pantalla aparte (montaje provisional); Fase 2: reemplazo total en la montura original |
-| Cerebro | **Radxa Zero 3W** (RK3566, Wi-Fi 6 + BT 5.4 en la variante AIC8800; NO la 3E, que no tiene Wi-Fi) |
-| Sistema | **Android** (Android 11 de Radxa para empezar; imagen propia después) |
+| Cerebro | **Radxa ROCK 4D 6 GB** (RK3576, Wi-Fi 6 + BT 5.4, Android 14 oficial, NPU 6 TOPS, 2 entradas CSI, CAN y UART en el GPIO). Reemplazó a la Radxa Zero 3W el 2026-11-02: la Zero quedaba en Android 11 sin imágenes nuevas y con reportes de Wi-Fi/BT débiles en Android (ver `docs/investigacion/placa-sbc.md`) |
+| Sistema | **Android** (Android 14 oficial de Radxa para empezar; imagen propia después) |
 | Pantalla | **Riverdi RVT70HSHNWC00-B**: 7" 1024×600, 850 nits, optical bonding, táctil PCAP UxTouch (doble guante y agua), HDMI + táctil por USB-C, entrada 7-30 V, -20..70 °C |
 | Entrada | Solo táctil por ahora |
-| ESP32 | Se usa el ESP32 que el dueño ya tiene para la ingeniería inversa. **El diseño final no lleva ESP32**: la Zero lee las señales con sus propios pines (a través de una placa de interfaz) |
+| ESP32 | Se usa el ESP32 que el dueño ya tiene para la ingeniería inversa. **El diseño final no lleva ESP32**: la ROCK 4D lee las señales con sus propios pines (a través de una placa de interfaz) |
 | OBD | No se usa (§4) |
 | Audio | El audio de Android Auto no debe ir a la pantalla; debe seguir yendo del celular al XGP X10 |
 | Distribución | Combinación B + C (§10) |
@@ -105,10 +105,10 @@ depender de una caja cerrada; todo se publica como código libre con documentaci
 ```
  Moto (conector del tablero)          RevDash (en la moto)                        Celular (S25)
  ─────────────────────────           ──────────────────────────────               ─────────────────
- cables discretos 12 V  ──►  Placa de interfaz  ──►  Pines Radxa Zero 3W           RevScope
+ cables discretos 12 V  ──►  Placa de interfaz  ──►  Pines Radxa ROCK 4D           RevScope
  bus de datos (si hay) ──►  (aislamiento,           (servicio de sistema)  ◄──►   (OBD, GPS, pulso,
                              transceptor RX)            │                          taller)
- 12 V conmutado por llave ─► Fuente + retención ────► Zero + Riverdi              Android Auto
+ 12 V conmutado por llave ─► Fuente + retención ────► ROCK 4D + Riverdi              Android Auto
                              de apagado                 │  App RevDash (tablero)  ◄──►  (Wi-Fi + BT)
                                                         │  open-headunit (AA)
                                                         └─ HDMI ► Riverdi ◄─ USB táctil
@@ -116,32 +116,32 @@ depender de una caja cerrada; todo se publica como código libre con documentaci
 
 ### 8.1 Hardware
 
-- **Radxa Zero 3W** (2-4 GB RAM es suficiente; la cantidad exacta la decide el constructor).
+- **Radxa ROCK 4D 6 GB** (la única variante con stock en noviembre de 2026; 85×56 mm, 0-60 °C, 2,7 W en reposo y ~7 W con la CPU al máximo: la placa de aluminio debe tocar el SoC y hay que medir la temperatura en la caja con la pantalla al 100 % y Android Auto proyectando).
 - **Riverdi RVT70HSHNWC00-B** por micro-HDMI → HDMI y táctil por USB. Se alimenta por su conector **J5
   "PWM & POWER"** (hoja de datos Rev 1.6: pines 1-2 GND, 3 habilitación activa en alto, 4 PWM de luz de
-  fondo 3.3 V 1-10 kHz, 5-6 VDD 7-30 V) con **SW6 en PWM externo**: la Zero enciende/apaga la pantalla y
+  fondo 3.3 V 1-10 kHz, 5-6 VDD 7-30 V) con **SW6 en PWM externo**: la ROCK 4D enciende/apaga la pantalla y
   controla el brillo (gestión térmica, día/noche). Conector RT1 para sensor de luz ambiente opcional.
-  **Antes de conectar la Zero a J5 se verifica con multímetro que pines 3 y 4 sean entradas** (hay placas
+  **Antes de conectar la ROCK 4D a J5 se verifica con multímetro que pines 3 y 4 sean entradas** (hay placas
   RTD2662 de otros fabricantes donde son salidas).
-- **Unidad única (decisión del dueño)**: Zero, fuente y Riverdi van en **una sola carcasa**; desde la moto
-  llega **un solo cable** (batería, llave, tierra y, en la Fase 2, las señales del tablero). La Zero no se
+- **Unidad única (decisión del dueño)**: ROCK 4D, fuente y Riverdi van en **una sola carcasa**; desde la moto
+  llega **un solo cable** (batería, llave, tierra y, en la Fase 2, las señales del tablero). La ROCK 4D no se
   alimenta de la placa de la pantalla (no tiene salida de 5 V documentada).
 - **Fuente propia (decisión del dueño, subproyecto)** dentro de la unidad: batería → fusible 5 A cerca de la
   batería → protección (inversión, TVS para transitorios tipo ISO 7637-2 / load dump) → interruptor de
-  retención → (a) 12 V protegidos a J5 de la Riverdi y (b) buck automotriz a 5 V / 3 A para la Zero. Debe
+  retención → (a) 12 V protegidos a J5 de la Riverdi y (b) buck automotriz a 5 V / 3 A para la ROCK 4D. Debe
   soportar la caída de voltaje al arrancar el motor sin reiniciar (buck-boost o condensador de respaldo). La
   falla número uno de las pantallas comerciales de moto es la alimentación. Presupuesto orientativo
-  US$15-25. Se diseña y arma entre la Fase 0 y la llegada de la Zero (2026-11-15). Se descartó la CarPiHAT
-  PRO 5 (hecha para Raspberry Pi, sin probar en la Zero, consume <1 mA apagada).
+  US$15-25. Se diseña y arma entre la Fase 0 y la llegada de la placa (compra en diciembre de 2026). Se descartó la CarPiHAT
+  PRO 5 (hecha para Raspberry Pi, sin probar en la ROCK 4D, consume <1 mA apagada).
 - **Retención de apagado con la batería (sin supercondensador)**: la señal de llave (12 V con llave del
   conector del tablero, o de la luz de la placa si se confirma que enciende siempre con llave) enciende el
-  interruptor; la Zero lo mantiene encendido por un pin; al quitar la llave la Zero lo detecta por otro pin,
+  interruptor; la ROCK 4D lo mantiene encendido por un pin; al quitar la llave la ROCK 4D lo detecta por otro pin,
   guarda y se apaga, y al terminar suelta el interruptor: consumo **cero** después. No hay límite de tiempo
   para el apagado. En la Fase 1, si la imagen de Radxa no permite apagarse sola por el pin, se usa un
   apagado con tiempo fijo y el apagado limpio llega con la imagen propia. Además, el odómetro y el trip se
   guardan de forma transaccional cada pocos segundos, para que un corte brusco pierda como máximo ese
   intervalo.
-- **Placa de interfaz moto → Zero** (diseño final): optoacopladores o divisores con protección para cada
+- **Placa de interfaz moto → ROCK 4D** (diseño final): optoacopladores o divisores con protección para cada
   señal de 12 V, contador por hardware o captura para pulsos (velocidad/RPM si llegan como pulsos) y
   transceptor en modo solo recepción si el conector lleva un bus (CAN o K-line). Su diseño exacto depende
   de la Fase 0.
@@ -149,7 +149,7 @@ depender de una caja cerrada; todo se publica como código libre con documentaci
   provisional en Fase 1 y sobre la base original en Fase 2. Sensor de temperatura (NTC) dentro de la
   carcasa.
 - **A prueba de agua (requisito del dueño; la humedad mató el tablero original)**:
-  - Carcasa cerrada **sin entradas de aire**; el calor sale por conducción (disipador de la Zero y de la
+  - Carcasa cerrada **sin entradas de aire**; el calor sale por conducción (disipador de la ROCK 4D y de la
     fuente apoyados en una placa trasera de aluminio que forma parte de la carcasa), no por ventilación.
   - Vidrio de la Riverdi sellado a la carcasa con empaque o junta continua (silicona/espuma de celda
     cerrada); unión de las mitades de la carcasa con empaque y tornillería de seguridad.
@@ -157,14 +157,14 @@ depender de una caja cerrada; todo se publica como código libre con documentaci
     nada de cables pasando por agujeros sin prensaestopas.
   - **Membrana de ventilación** (tipo Gore) que iguala presión sin dejar pasar agua: evita que los cambios
     de temperatura "bombeen" humedad hacia adentro y empañen el vidrio.
-  - Bolsita desecante reemplazable y **barniz protector (conformal coating)** en la fuente, la Zero y las
+  - Bolsita desecante reemplazable y **barniz protector (conformal coating)** en la fuente, la ROCK 4D y las
     placas de interfaz.
   - Prueba de aceptación: manguera o lluvia simulada sin entrada de agua, y ciclo calor/frío sin
     condensación interna.
 
-### 8.2 Software en la Zero
+### 8.2 Software en la ROCK 4D
 
-- **Android 11** (imagen de Radxa en Fase 1; imagen propia en Fase 2).
+- **Android 14** (imagen oficial de Radxa en Fase 1; imagen propia en Fase 2 desde el SDK de Rockchip, target `rk3576_rock_4d-userdebug`).
 - **App RevDash** (Kotlin + Compose, igual que RevScope): es el **launcher** (pantalla de inicio fija,
   modo kiosco). Dibuja el tablero y gestiona los estados de §10.
 - **open-headunit** (AGPL, `github.com/andreknieriem/open-headunit`, activo, v3.5.0 2026-10-17) para
@@ -226,9 +226,9 @@ publicados lo descargan de su repo al compilar y no se publican imágenes que lo
 
 ### Fase 1 — Pantalla aparte
 
-- Zero 3W + Riverdi + fuente + carcasa provisional, montadas junto a la base del tablero.
-- Primeras pruebas, antes de construir lo demás: Android 11 de Radxa arranca, video por hardware, Wi-Fi y
-  BT del AIC8800 funcionan, Android Auto inalámbrico con el S25, y que el audio llegue al X10 (§12).
+- ROCK 4D + Riverdi + fuente + carcasa provisional, montadas junto a la base del tablero.
+- Primeras pruebas, antes de construir lo demás: Android 14 de Radxa arranca, video por hardware, Wi-Fi
+  5 GHz (hotspot o Wi-Fi Direct) y BT funcionan, Android Auto inalámbrico con el S25, y que el audio llegue al X10 (§12).
 - App RevDash con los tres estados de §10, alimentada por el ESP32 por USB.
 - Validación: velocidad contra GPS y contra RevScope/OBD; testigos contra lo que se ve en la moto.
 
@@ -240,9 +240,8 @@ publicados lo descargan de su repo al compilar y no se publican imágenes que lo
 
 ### Subproyecto opcional — Android más nuevo
 
-Portar el kit Android 13/14 de Rockchip para RK356x a la Zero 3W (existe para RK3568 en FriendlyElec y hay
-productos RK3566 con Android 13). Obstáculo principal: no hay driver de Android público para el Wi-Fi AIC8800.
-Alternativa: Android mainline (GloDroid). Solo después de la Fase 2.
+Resuelto en buena parte con el cambio a la ROCK 4D (2026-11-02): trae Android 14 oficial y ya hay Android 15
+de terceros para el RK3576. Queda como subproyecto seguir las versiones nuevas que publique Rockchip/Radxa.
 
 ## 10. Pantalla: estados y distribución (aprobado con maquetas)
 
@@ -272,25 +271,26 @@ todos los estados. Maquetas: `.superpowers/brainstorm/` (layout-v2.html).
   falla, GPS, pulso del Galaxy Watch). Sin celular, RevDash funciona completo con lo suyo.
 - **Transporte (decisión del dueño)**: **BLE**. RevDash expone un servidor GATT y RevScope se conecta como
   cliente, igual que hoy se conecta a adaptadores OBD BLE. Funciona con o sin Android Auto y no toca el
-  Wi-Fi del celular (el dueño no quiere ningún riesgo sobre sus datos móviles). El Wi-Fi de la Zero queda
+  Wi-Fi del celular (el dueño no quiere ningún riesgo sobre sus datos móviles). El Wi-Fi de la ROCK 4D queda
   solo para Android Auto. Sincronización pesada por Wi-Fi (historial de viajes, actualizaciones): mejora
   futura, fuera de alcance.
-- Fase 1 provisional: el ESP32 conectado a la Zero por USB (puerto serie) como fuente de señales.
+- Fase 1 provisional: el ESP32 conectado a la ROCK 4D por USB (puerto serie) como fuente de señales.
 
 ## 12. Riesgos y cómo se prueban primero
 
 0. **Topología Bluetooth/Wi-Fi (mi decisión)**: llamadas, música y voces de navegación van siempre al
-   casco. El S25 queda emparejado al X10 por Bluetooth como hoy; la Zero hace de punto de acceso Wi-Fi para
+   casco. El S25 queda emparejado al X10 por Bluetooth como hoy; la ROCK 4D hace de punto de acceso Wi-Fi para
    Android Auto (como un carro) y el teléfono mantiene sus datos móviles. Verificar en Fase 1 que One UI no
    corte los datos ni Android Auto al unirse a una red sin internet.
 1. **Audio al intercomunicador.** Con Android Auto inalámbrico, el teléfono manda el audio a la cabeza.
    Plan: que la cabeza no declare canales de audio de medios/voz para que el teléfono lo conserve y lo envíe
    al X10. Un proyecto similar (Hudiy) permite desactivarlos, pero un usuario reportó que su teléfono siguió
-   eligiendo la cabeza. Primera prueba de la Fase 1. Respaldo: la Zero reenvía el audio al X10 por Bluetooth
+   eligiendo la cabeza. Primera prueba de la Fase 1. Respaldo: la ROCK 4D reenvía el audio al X10 por Bluetooth
    (A2DP); las llamadas por ese camino son más complejas.
-2. **Wi-Fi/BT del AIC8800 en Android 11.** Sin Wi-Fi no hay Android Auto inalámbrico. Se prueba con la
-   imagen de Radxa antes de construir nada más. Respaldo: Orange Pi 3B (RK3566, Android 11 oficial, Wi-Fi 5 +
-   BT 5) o Android Auto por cable.
+2. **Wi-Fi/BT para Android Auto inalámbrico.** No hay reportes de open-headunit con hotspot de 5 GHz o
+   Wi-Fi Direct en placas Rockchip con Android. Se prueba con la imagen de Radxa antes de construir nada más.
+   Respaldo: dongle USB de Android Auto inalámbrico (Motorola MA1 o AAWireless; el README de open-headunit lo
+   recomienda), un ESP32 como relé de Bluetooth (open-headunit lo soporta) o Android Auto por cable.
 3. **Calor.** La Riverdi opera hasta 70 °C; su almacenamiento (apagada) probablemente llega a 80 °C (dato de
    un modelo hermano, sin verificar en su ficha). El dueño la quiere **fija**, así que estará al sol
    parqueada. Mitigación pasiva: ASA claro, visera que dé sombra al vidrio, holgura y ventilación entre
@@ -322,7 +322,7 @@ todos los estados. Maquetas: `.superpowers/brainstorm/` (layout-v2.html).
    - El velocímetro nunca marca menos que la velocidad real (calibración con margen hacia arriba).
    - Radios: un equipo solo con Wi-Fi y Bluetooth no se homologa ante la CRC (eso es para equipos con red
      celular); debe cumplir las reglas de uso libre del espectro de la ANE.
-8. **Android Auto con touch**: open-headunit en Android 11 sin verificar; open-headunit y la vista dividida
+8. **Android Auto con touch**: open-headunit en Android 14 sobre la ROCK 4D sin verificar; open-headunit y la vista dividida
    de Android Auto en 740×600 sin verificar.
 9. **Android Auto depende de un certificado ajeno** (investigación 2026-11-01,
    `docs/investigacion/android-auto.md`): el teléfono solo acepta receptores con certificado de la raíz de

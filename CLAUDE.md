@@ -35,7 +35,7 @@ La Apache es el primer modelo, no el único: todo lo de la Fase 0 debe poder rep
 | Analizador lógico HiLetgo 24 MHz 8 canales | en mano | Clon Saleae (USB `VID_0925&PID_3881`, chip CY7C68013A). En sigrok/PulseView: driver `fx2lafw`. Umbral de entrada ≈ 2.0 V; el Saleae original admite hasta 5.25 V, el clon no lo publica: límite práctico 3.6 V como el ESP32. |
 | Multímetro | en mano | |
 | Componentes de sondas | en el carrito de Amazon (2026-11-01, compra pendiente del dueño) | Lista y estado en `docs/fase0/sondas.md` §Materiales; diodos BAT85 de patas en vez de BAT54S. |
-| Radxa Zero 3W 2 GB con GPIO | llega ≈ 2026-11-15 | Android 11 primero, imagen propia después. |
+| Radxa ROCK 4D 6 GB (RK3576) | en el carrito de Amazon (B0HJ88SCF2, US$131.99), compra en diciembre de 2026 | Android 14 oficial; imagen propia después. Reemplazó a la Zero 3W (ver `docs/investigacion/placa-sbc.md`). |
 | Riverdi RVT70HSHNWC00-B 7" HDMI | llega ≈ 2026-12-06 | Energía, enable y PWM por J5 (7-30 V); verificar con multímetro que sean entradas. |
 
 ## Reglas de seguridad (no negociables)
@@ -49,11 +49,11 @@ La Apache es el primer modelo, no el único: todo lo de la Fase 0 debe poder rep
 
 ## Decisiones del dueño
 
-- Radxa Zero 3W (no la 3E: no tiene Wi-Fi) + Android 11 + Riverdi 7" HDMI; montaje fijo; solo táctil.
-- Unidad única: Zero + fuente propia + Riverdi en una carcasa, un solo cable a la moto. Retención de apagado con batería (sin supercondensador, consumo cero apagada).
+- Radxa ROCK 4D 6 GB + Android 14 + Riverdi 7" HDMI (2026-11-02; antes Zero 3W + Android 11); montaje fijo; solo táctil.
+- Unidad única: placa + fuente propia + Riverdi en una carcasa, un solo cable a la moto. Retención de apagado con batería (sin supercondensador, consumo cero apagada).
 - Estanca, sin entradas de aire: disipación por placa de aluminio, membrana Gore, conector Deutsch DT o Superseal, conformal coating.
 - Sin OBD en RevDash: el puerto queda libre para RevScope. El OBD (Vgate + RevScope) solo sirve de referencia durante la validación de la Fase 0.
-- El ESP32 es solo para la ingeniería inversa; el diseño final lee los pines desde la Zero.
+- El ESP32 es solo para la ingeniería inversa; el diseño final lee los pines desde la ROCK 4D.
 - RevDash ↔ RevScope por BLE (el dueño temía que el Wi-Fi le cortara los datos móviles).
 - Audio de Android Auto al intercomunicador XGP X10.
 - Distribución de pantalla B+C (+ franja). Testigo ABS imprescindible.

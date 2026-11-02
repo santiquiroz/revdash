@@ -7,7 +7,7 @@ a la navegación y la música del celular. Sin cajas cerradas: código, hardware
 [![Licencia: AGPL-3.0](https://img.shields.io/badge/licencia-AGPL--3.0-blue.svg)](LICENSE)
 ![Estado: Fase 0](https://img.shields.io/badge/estado-Fase%200%20·%20ingenier%C3%ADa%20inversa-orange.svg)
 ![Plataforma: Android](https://img.shields.io/badge/plataforma-Android%2011-3DDC84.svg?logo=android&logoColor=white)
-![Hardware: Radxa Zero 3W](https://img.shields.io/badge/hardware-Radxa%20Zero%203W-222.svg)
+![Hardware: Radxa ROCK 4D](https://img.shields.io/badge/hardware-Radxa%20ROCK%204D-222.svg)
 
 <p align="center">
   <img src="docs/img/estado-1-tablero.png" width="720" alt="Maqueta del tablero de RevDash: velocidad, testigos, marcha y modo">
@@ -60,7 +60,7 @@ flowchart LR
     subgraph unidad["Unidad RevDash (carcasa sellada)"]
         fuente["Fuente propia: protección + apagado retardado"]
         riverdi["Pantalla Riverdi 7 pulgadas (J5: 12 V, habilitar, PWM)"]
-        zero["Radxa Zero 3W con Android"]
+        zero["Radxa ROCK 4D con Android"]
     end
     celular["Celular (Android Auto + RevScope)"]
 
@@ -78,7 +78,7 @@ flowchart LR
 
 | Pieza | Para qué |
 |---|---|
-| **Radxa Zero 3W** (RK3566, Wi-Fi 6, Bluetooth 5.4, con GPIO) | El cerebro: Android 11, el tablero y Android Auto |
+| **Radxa ROCK 4D** (RK3576, Wi-Fi 6, Bluetooth 5.4, GPIO con CAN) | El cerebro: Android 14, el tablero y Android Auto |
 | **Riverdi RVT70HSHNWC00-B** (7", 1024×600, 850 nits) | Pantalla legible al sol, con táctil que funciona con guantes y agua |
 | **Fuente propia** | Protección contra picos de la moto y apagado retardado sin consumo fantasma |
 | **Carcasa en ASA** impresa en 3D | Sellada, con visera, sobre la montura original |
