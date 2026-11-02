@@ -13,6 +13,15 @@ Tablero abierto con Android Auto para la TVS Apache RTR 160 4V del dueño. Repo 
 - El tablero original está muerto (humedad / falso contacto en el mazo bajo la chapa, zona de las exploradoras). Las señales siguen llegando al conector.
 - Pendiente del dueño: kilometraje exacto (≈ 10 780 km) para arrancar el odómetro propio.
 
+## Replicabilidad
+
+La Apache es el primer modelo, no el único: todo lo de la Fase 0 debe poder repetirse en otra moto.
+
+- El procedimiento de `docs/fase0/` se escribe genérico; lo propio de la Apache va en su archivo de pinout.
+- Anotar en el pinout el tiempo que tomó cada paso y la referencia del conector (marca y número de parte): son el costo de ingeniería por modelo.
+- Las señales CAN que se descubran se guardan también en un archivo DBC por modelo (`docs/fase0/<modelo>.dbc`), formato estándar que leen SavvyCAN y `cantools`.
+- El código no lleva nada propio de un modelo: pinout, señales y calibraciones entran como datos (perfil por modelo).
+
 ## Hardware
 
 | Pieza | Estado | Notas |
