@@ -12,8 +12,8 @@ Para direccionales, luz alta y K-line:
 ```text
 Señal ── R1 15 kΩ ──┬── Rserie 1 kΩ ── pin ESP32 / canal analizador
                      ├── R2 4.7 kΩ ── GND
-                     ├── BAT54S ── 3V3
-                     └── BAT54S ── GND
+                     ├── BAT85 (ánodo en el nodo) ── 3V3
+                     └── BAT85 (cátodo en el nodo) ── GND
 ```
 
 El divisor tiene factor `4.7 kΩ / (15 kΩ + 4.7 kΩ) = 0.2386`.
@@ -33,7 +33,7 @@ del VIH del ESP32.
 Logic original, del que el HiLetgo es clon, admite de −0.5 V a 5.25 V (el clon
 no publica el suyo: tomar 3.6 V como límite común). El divisor queda dentro
 hasta 15 V (3.58 V), así que se puede medir con el motor en marcha (≈ 14.4 V).
-Por encima de 15 V (picos de la moto) el BAT54S lleva el nodo a ≈ 3.6 V y el
+Por encima de 15 V (picos de la moto) el BAT85 hacia 3V3 lleva el nodo a ≈ 3.6 V y el
 1 kΩ limita la corriente hacia el pin. Antes de conectar cada canal, medir el
 nodo con multímetro: debe quedar entre 0 y 3.6 V.
 
@@ -47,7 +47,7 @@ fiable.
 ```text
 3V3 ── pull-up 10 kΩ ──┬── Rserie 1 kΩ ── pin ESP32 / canal analizador
                        │
-                     BAT54  (ánodo en el nodo)
+                     BAT85  (ánodo en el nodo)
                        │
                        └── (cátodo) ── señal de la moto (ECU / interruptor)
 GND común con la moto
@@ -58,7 +58,7 @@ GND común con la moto
 - La orientación evita que la tensión de 12 V entre al nodo.
 - La lógica queda invertida: masa significa activo / lectura 0.
 
-Puede usarse un BAT54 individual o una mitad de un BAT54S.
+BAT85 (Schottky de patas, DO-35, 30 V / 200 mA): entra en la protoboard. BAT43 o BAT54 sirven igual.
 
 ## CAN (si existe)
 
@@ -74,7 +74,9 @@ SN65HVD230 TX ── GPIO 21 del ESP32
 El firmware mantiene el ESP32 en solo escucha y no pone el bus en dominante.
 En sesiones solo con el analizador, dejar TX del transceptor a 3V3 mediante
 una resistencia de 10 kΩ para que permanezca recesivo. No añadir terminación
-de 120 Ω.
+de 120 Ω, y quitar la que traen los módulos baratos: una resistencia SMD
+marcada `121` entre CAN-H y CAN-L. Levantarla con el cautín antes de conectar el
+módulo a la moto; si se deja, cambia la impedancia del bus de la moto.
 
 No conectar CAN-H/CAN-L directamente al analizador: CAN es diferencial
 (≈ 2.5 V recesivo y ≈ 3.5/1.5 V dominante). El umbral fijo del analizador no
@@ -97,22 +99,24 @@ analizador.
 
 ## Materiales
 
-Cantidades para 8 canales digitales de lado alto, 4 de lado bajo y un canal
-CAN; el margen cubre repuestos.
+El analizador tiene 8 canales: como máximo 8 sondas a la vez, mezcla de lado
+alto y lado bajo. Cantidades para 8 de lado alto + 4 de lado bajo + 1 CAN, con
+repuestos.
 
-| Material | Cantidad sugerida | Estado |
+| Material | Cantidad | Estado (2026-11-01) |
 |---|---:|---|
-| ESP32 DevKit ESP32-D0WD-V3, USB CP210x | 1 | Ya lo tiene el dueño |
-| Analizador HiLetgo 24 MHz, 8 canales | 1 | Ya lo tiene el dueño |
-| Multímetro | 1 | Ya lo tiene el dueño |
-| Resistencias 15 kΩ, 1/4 W (R1) | 10 | Comprar |
-| Resistencias 4.7 kΩ, 1/4 W (R2) | 10 | Comprar |
-| Resistencias 10 kΩ, 1/4 W (pull-up de lado bajo y TX CAN) | 8 | Comprar |
-| Resistencias 1 kΩ, 1/4 W (serie a cada entrada) | 16 | Comprar |
-| Diodos dobles Schottky BAT54S | 10 | Comprar |
-| Diodos Schottky BAT54 individuales | 5 | Comprar |
-| Módulo transceptor SN65HVD230 de 3V3 | 1 | Comprar |
-| Protoboard o placa perforada | 1 | Comprar |
-| Agujas de back-probing | 1 juego | Comprar |
-| Cables Dupont | 1 juego | Comprar |
-| Pinzas de prueba | 1 juego | Comprar |
+| ESP32 DevKit ESP32-D0WD-V3, USB CP210x | 1 | Tengo (kit LAFVIN B0BVZBTP8V) |
+| Protoboard de 830 puntos | 1 | Tengo (kit LAFVIN; varias reseñas dicen que viene mala: probar continuidad) |
+| Cables dupont macho-macho, macho-hembra, hembra-hembra | 1 juego | Tengo (kit LAFVIN) |
+| Resistencias 10 kΩ (pull-up de lado bajo y TX del CAN) | 5 | Tengo (kit LAFVIN, ≈ 10) |
+| Resistencias 1 kΩ (serie hacia cada pin; 220 Ω también sirve) | 12 | Tengo (kit LAFVIN, ≈ 10 de 1 kΩ + ≈ 10 de 220 Ω) |
+| Analizador HiLetgo 24 MHz, 8 canales | 1 | Tengo |
+| Multímetro | 1 | Tengo |
+| Resistencias 15 kΩ (R1) y 4.7 kΩ (R2), 1/4 W | 8 + 8 | En el carrito: BOJACK 50 valores, 1350 piezas (B07P3MFG5D) |
+| Diodos Schottky BAT85, DO-35 (2 por sonda de lado alto, 1 por sonda de lado bajo) | 20 | En el carrito: 100 piezas (búsqueda "BAT85", US$6.99) |
+| Módulo SN65HVD230 a 3V3 | 1 | En el carrito: hiBCTR, 3 piezas (B0FDLDXCK9) |
+| Agujas de back-probing con cables y caimanes | 1 juego | En el carrito: SWANLAKE 22 piezas (B0BW3YT6GT) |
+| Caimán a dupont macho (de la aguja a la protoboard) | 10 | En el carrito: MTDELE 20 piezas |
+
+Los módulos MOSFET de 5-36 V (B0FMJH3DML) no sirven en la Fase 0: son salidas y
+aquí solo se escucha.
