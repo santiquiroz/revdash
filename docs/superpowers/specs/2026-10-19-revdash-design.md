@@ -128,7 +128,8 @@ depender de una caja cerrada; todo se publica como código libre con documentaci
   alimenta de la placa de la pantalla (no tiene salida de 5 V documentada).
 - **Fuente propia (decisión del dueño, subproyecto)** dentro de la unidad: batería → fusible 5 A cerca de la
   batería → protección (inversión, TVS para transitorios tipo ISO 7637-2 / load dump) → interruptor de
-  retención → (a) 12 V protegidos a J5 de la Riverdi y (b) buck automotriz a 5 V / 3 A para la ROCK 4D. Debe
+  retención → (a) 12 V protegidos a J5 de la Riverdi y (b) buck automotriz a 5 V / 5 A para la ROCK 4D (solo acepta 5 V por USB-C o pines 2/4; 12 V
+  directos la dañan; Radxa pide ≥ 10 W sin carga USB y 25 W con los USB cargados). Debe
   soportar la caída de voltaje al arrancar el motor sin reiniciar (buck-boost o condensador de respaldo). La
   falla número uno de las pantallas comerciales de moto es la alimentación. Presupuesto orientativo
   US$15-25. Se diseña y arma entre la Fase 0 y la llegada de la placa (compra en diciembre de 2026). Se descartó la CarPiHAT
