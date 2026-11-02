@@ -42,6 +42,10 @@ Protocolo 6 (CAN 11 bits, 500 kbit/s). En 10 s: 3276 tramas, 0 desbordes, 0 huec
   está en la rueda delantera (ABS de un canal) → mapear en ruta contra GPS.
 - Freno delantero y freno trasero (diff vacío) → back-probe en el interruptor de luz de freno.
 - Botón de arranque con kill switch en OFF (diff vacío).
+- Botones MODE e i (diff vacío; MODE probado con motor apagado y en ralentí). Con el tablero
+  original muerto nadie publica el modo: el tablero lee los botones y se lo comunica a la ECU.
+  Elegir modo desde RevDash exigiría escribir en el CAN (fase posterior, requiere capturar el
+  mensaje con un tablero sano).
 
 ## Desconocidos
 
