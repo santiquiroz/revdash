@@ -14,7 +14,8 @@ evidencia.
   verificados.
 - Prueba de banco: conecta un canal del analizador a 3V3 de la ESP32 y otro a
   GND. Captura 1 s en PulseView. Debes ver un nivel 1 constante y un nivel 0
-  constante.
+  constante. Ojo: un canal suelto también lee 1, así que la prueba que cuenta es
+  la del canal a GND.
 - Deja el portátil a batería, sin cargador. Lleva multímetro, agujas de
   back-probing y las sondas montadas.
 

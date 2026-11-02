@@ -9,7 +9,7 @@ Tablero abierto con Android Auto para la TVS Apache RTR 160 4V del dueño. Repo 
 ## Estado (2026-11-01)
 
 - Fase 0 (ingeniería inversa del conector del tablero) en curso. Plan de 6 tareas; la Tarea 1 (guía de campo) es la única con contenido, el resto (firmware ESP32, `tools/*.py`) sin empezar.
-- Analizador lógico recibido (2026-11-01); en el PC de escritorio PulseView instalado, falta asociar el driver WinUSB con Zadig y la prueba de banco. Siguiente paso: llevar portátil + analizador + sondas al garaje y seguir `docs/fase0/README.md`.
+- Analizador lógico recibido y funcionando en el PC de escritorio (2026-11-01): driver WinUSB instalado, `sigrok-cli --scan` lo ve como "fx2lafw - Saleae Logic with 8 channels" y captura a 1 MHz. Los canales sueltos leen 1. Siguiente paso: llevar portátil + analizador + sondas al garaje y seguir `docs/fase0/README.md`.
 - El tablero original está muerto (humedad / falso contacto en el mazo bajo la chapa, zona de las exploradoras). Las señales siguen llegando al conector.
 - Pendiente del dueño: kilometraje exacto (≈ 10 780 km) para arrancar el odómetro propio.
 
@@ -50,7 +50,8 @@ Tablero abierto con Android Auto para la TVS Apache RTR 160 4V del dueño. Repo 
 
 1. `git clone https://github.com/santiquiroz/revdash.git` y abrir Claude Code en esa carpeta.
 2. PulseView: `winget install --id Sigrok.PulseView -e`. Queda en `C:\Program Files (x86)\sigrok\PulseView\`.
-3. Driver del analizador: conectar el analizador, abrir `zadig.exe` de esa carpeta (pide administrador), Options → List All Devices, elegir el dispositivo `VID 0925 / PID 3881` (puede salir como "Unknown Device" o "fx2lafw"), driver **WinUSB**, Install Driver. Luego en PulseView: dispositivo "fx2lafw (generic driver for FX2 based LAs)" → Scan → debe aparecer "Saleae Logic".
+3. Driver del analizador (con el analizador conectado): en un PowerShell como administrador, `powershell -ExecutionPolicy Bypass -File tools\windows\install-winusb-fx2.ps1`. Instala WinUSB del propio Windows para `USB\VID_0925&PID_3881` con un catálogo firmado por un certificado local cuya clave privada se borra, igual que Zadig; el registro queda en `%TEMP%evdash-winusb\install.log`. Probado el 2026-11-01 en Windows 11. Alternativa manual: `zadig.exe` de la carpeta de PulseView → Options → List All Devices → dispositivo `0925 3881` → WinUSB → Install Driver. Comprobar en PulseView: dispositivo "fx2lafw (generic driver for FX2 based LAs)" → Scan → "Saleae Logic".
+   - Opcional, para capturar sin interfaz gráfica: `sigrok-cli` 0.7.2 (instalador en sigrok.org/download/binary/sigrok-cli/; se puede extraer con 7-Zip sin instalar). `sigrok-cli --scan` y `sigrok-cli -d fx2lafw --config samplerate=1m --samples 1000000 -o prueba.sr`.
 4. Driver del ESP32: CP210x de Silicon Labs (Windows Update suele instalarlo solo; si no aparece un COM, bajarlo de silabs.com).
 5. Python 3.11+, `pip install pyserial pytest platformio` (usar `python -m platformio` si `pio` no queda en el PATH).
 6. Solo para correr las pruebas nativas del firmware (`pio test -e native`): gcc, `winget install BrechtSanders.WinLibs.POSIX.UCRT`.
