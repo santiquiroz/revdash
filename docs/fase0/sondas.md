@@ -73,10 +73,16 @@ SN65HVD230 TX ── GPIO 21 del ESP32
 
 El firmware mantiene el ESP32 en solo escucha y no pone el bus en dominante.
 En sesiones solo con el analizador, dejar TX del transceptor a 3V3 mediante
-una resistencia de 10 kΩ para que permanezca recesivo. No añadir terminación
-de 120 Ω, y quitar la que traen los módulos baratos: una resistencia SMD
-marcada `121` entre CAN-H y CAN-L. Levantarla con el cautín antes de conectar el
-módulo a la moto; si se deja, cambia la impedancia del bus de la moto.
+una resistencia de 10 kΩ para que permanezca recesivo. Quitar la terminación
+que traen los módulos baratos (resistencia SMD marcada `121` entre CAN-H y
+CAN-L): levantarla con el cautín antes de conectar el módulo a la moto.
+
+Terminación del bus sin el tablero: con llave OFF, medir la resistencia entre
+CAN-H y CAN-L en el conector del mazo. ≈ 60 Ω = el bus ya tiene sus dos
+terminaciones; no añadir nada. ≈ 120 Ω = el tablero era una de las dos puntas
+del bus y falta su terminación: poner 120 Ω entre CAN-H y CAN-L en la
+derivación mientras el tablero esté desconectado (sin ella la ECU o el ABS
+pueden marcar errores de comunicación).
 
 No conectar CAN-H/CAN-L directamente al analizador: CAN es diferencial
 (≈ 2.5 V recesivo y ≈ 3.5/1.5 V dominante). El umbral fijo del analizador no

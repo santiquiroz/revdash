@@ -32,7 +32,13 @@ Pistas:
 - **GND:** ≈ 0 Ω a la carcasa o al negativo de batería.
 - **+12 V permanente:** presente con llave OFF.
 - **+12 V con llave:** aparece al poner la llave en ON.
-- **Posible par CAN:** dos pines a ≈ 2.3–2.7 V con llave ON.
+- **Posible par CAN:** dos pines a ≈ 2.3–2.7 V con llave ON. Con llave OFF,
+  medir la resistencia entre ellos: 60 Ω o 120 Ω (ver terminación en
+  [sondas.md](sondas.md)).
+- **Combustible:** es analógico (flotador con resistencia variable), el
+  analizador lógico no lo ve. Con llave OFF, medir ohmios entre el pin y GND con
+  el tanque en al menos tres niveles (reserva, medio, lleno) y anotarlos en el
+  pinout: con esa tabla se calibra el ADC del diseño final.
 - **Posible K-line:** ≈ 12 V en reposo, con caídas breves.
 - **Posible lado bajo flotante:** la señal no se mueve y queda cerca de 0 V;
   probarla con la sonda de lado bajo.
@@ -69,6 +75,15 @@ moto.
   `docs/fase0/img/` y cita sus nombres en la plantilla.
 
 ### Paso 6 — buscar y diferenciar tramas
+
+Antes de tocar el mazo, prueba si el bus del tablero llega al puerto OBD (en
+motos casi nunca hay gateway). Con el Vgate en el OBD y una app de terminal
+Bluetooth en el celular (RevScope desconectado): `AT Z`, `AT E0`, `AT SP 0` y
+`01 00` (busca el protocolo), `AT DPN` (anotar), `AT H1`, `AT CSM1` (escucha sin
+ACK; si responde `?`, el Vgate no lo soporta: anotarlo), `AT MA` con el motor en
+marcha. Si aparecen tramas periódicas de varios IDs además de `7E8`, el bus es el
+mismo y el CAN se puede estudiar desde el OBD. Si aparece `BUFFER FULL`, filtrar
+por ID con `AT CRA <id>`. Cualquier tecla detiene `AT MA`.
 
 Busca un par trenzado o pines con tramas. Prueba CAN a 500 y 250 kbps, o
 UART/K-line a 10400 baudios.
