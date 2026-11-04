@@ -43,6 +43,7 @@ dependencies {
     implementation(libs.lifecycle.runtime.compose)
     implementation(libs.datastore.preferences)
     implementation(libs.coroutines.android)
+    implementation(libs.usb.serial)
     debugImplementation(libs.compose.ui.tooling)
 
     testImplementation(libs.junit)

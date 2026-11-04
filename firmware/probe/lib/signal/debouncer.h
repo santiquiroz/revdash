@@ -9,6 +9,7 @@ class EdgeDebouncer {
  public:
   EdgeDebouncer(uint32_t stableMs, bool initial);
   std::optional<bool> update(uint32_t nowMs, bool raw);
+  bool level() const;
 
  private:
   uint32_t stableMs_;

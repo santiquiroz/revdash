@@ -15,6 +15,7 @@ constexpr int kDigitalPins[kNumChannels] = {34, 35, 36, 39, 32, 33, 25, 26};
 constexpr uint8_t kPulseChannels[] = {0, 1};
 constexpr uint8_t kNumPulseChannels = sizeof(kPulseChannels) / sizeof(kPulseChannels[0]);
 constexpr uint32_t kDebounceMs = 5;
+constexpr uint32_t kLevelRefreshMs = 1000;
 constexpr uint32_t kFrequencyWindowMs = 250;
 constexpr uint32_t kStatusPeriodMs = 5000;
 

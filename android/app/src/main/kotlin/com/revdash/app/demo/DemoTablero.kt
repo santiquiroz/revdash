@@ -10,6 +10,8 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.revdash.app.ui.ModoPantalla
 import com.revdash.app.ui.UiTablero
+import com.revdash.app.usb.hayEsp32
+import com.revdash.app.usb.lineasUsb
 import com.revdash.nucleo.Alerta
 import com.revdash.nucleo.AlertasVisibles
 import com.revdash.nucleo.EstadoDashcam
@@ -25,6 +27,8 @@ import com.revdash.nucleo.estado.estadosEnVivo
 import com.revdash.nucleo.odometro.con
 import com.revdash.nucleo.odometro.debePersistir
 import com.revdash.nucleo.perfil.PerfilesIncluidos
+import com.revdash.nucleo.rdp.CanalesCable
+import com.revdash.nucleo.rdp.estadosDesdeRdp
 import com.revdash.nucleo.tramas.CapturasIncluidas
 import com.revdash.nucleo.tramas.ReproductorCandump
 import kotlinx.coroutines.Dispatchers
@@ -46,6 +50,7 @@ import java.time.format.DateTimeFormatter
 
 private val Context.prefsTablero by preferencesDataStore("tablero")
 private val CLAVE_ODOMETRO = doublePreferencesKey("odometro_km")
+private val CANALES_CABLE = CanalesCable()
 
 private const val TOTAL_INICIAL_KM = 10_780.0
 private const val LIMITE_DEMO_KMH = 30
@@ -53,6 +58,7 @@ private const val CICLO_DEMO_MS = 20_000L
 
 class DemoTablero(app: Application) : AndroidViewModel(app) {
     private val prefs = app.applicationContext.prefsTablero
+    private val fuenteUsb = hayEsp32(app)
 
     private val modo = MutableStateFlow(ModoPantalla.COMPLETO)
     private val odometro = MutableStateFlow(Odometro(totalKm = TOTAL_INICIAL_KM))
@@ -61,7 +67,7 @@ class DemoTablero(app: Application) : AndroidViewModel(app) {
     // Mismo reloj en la fuente y en el proyector: la frescura se calcula sobre una sola base.
     private val reproductor = ReproductorCandump(CapturasIncluidas.empujando(), reloj = SystemClock::elapsedRealtime)
     private val proyector = ProyectorEstado(PerfilesIncluidos.apache())
-    private val estados = estadosEnVivo(reproductor.tramas(), proyector, reloj = SystemClock::elapsedRealtime)
+    private val estados = fuenteEstados(app)
         .flowOn(Dispatchers.Default)
         .shareIn(viewModelScope, SharingStarted.Eagerly, replay = 1)
 
@@ -90,7 +96,15 @@ class DemoTablero(app: Application) : AndroidViewModel(app) {
             }
     }
 
+    private fun fuenteEstados(app: Application): Flow<EstadoMoto> =
+        if (fuenteUsb) {
+            estadosDesdeRdp(lineasUsb(app), proyector, CANALES_CABLE, reloj = SystemClock::elapsedRealtime)
+        } else {
+            estadosEnVivo(reproductor.tramas(), proyector, reloj = SystemClock::elapsedRealtime)
+        }
+
     private fun armarUi(estado: EstadoMoto, ahora: Long, odo: Odometro, modoActual: ModoPantalla): UiTablero {
+        if (fuenteUsb) return armarUiUsb(estado, odo, modoActual)
         val ciclo = ahora % CICLO_DEMO_MS
         val simulado = estado.copy(
             // 1,5 Hz = periodo de 667 ms; encendido la mitad de cada periodo.
@@ -114,6 +128,17 @@ class DemoTablero(app: Application) : AndroidViewModel(app) {
             hora = horaLocal(),
         )
     }
+
+    private fun armarUiUsb(estado: EstadoMoto, odo: Odometro, modoActual: ModoPantalla): UiTablero =
+        UiTablero(
+            estado = estado,
+            odometro = odo,
+            // Datos reales: sin cámaras ni lector de señales todavía, no se inventan.
+            dashcam = EstadoDashcam.Apagada,
+            limiteKmh = null,
+            modo = modoActual,
+            hora = horaLocal() + " · USB",
+        )
 
     private fun alimentarOdometro(estado: EstadoMoto) {
         val lectura = estado.velocidadKmh

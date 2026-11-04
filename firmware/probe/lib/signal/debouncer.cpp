@@ -23,4 +23,8 @@ std::optional<bool> EdgeDebouncer::update(uint32_t nowMs, bool raw) {
   return std::nullopt;
 }
 
+bool EdgeDebouncer::level() const {
+  return stable_;
+}
+
 }  // namespace rdp

@@ -12,6 +12,8 @@ junit = "4.13.2"
 robolectric = "4.14.1"
 roborazzi = "1.75.0"
 androidxTestCore = "1.6.1"
+# Puerto serie USB (CP210x, CH340, FTDI) sin root; MIT.
+usbSerial = "3.11.0"
 
 [libraries]
 compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
@@ -36,6 +38,7 @@ androidx-test-core = { group = "androidx.test", name = "core", version.ref = "an
 roborazzi = { group = "io.github.takahirom.roborazzi", name = "roborazzi", version.ref = "roborazzi" }
 roborazzi-compose = { group = "io.github.takahirom.roborazzi", name = "roborazzi-compose", version.ref = "roborazzi" }
 roborazzi-junit-rule = { group = "io.github.takahirom.roborazzi", name = "roborazzi-junit-rule", version.ref = "roborazzi" }
+usb-serial = { group = "com.github.mik3y", name = "usb-serial-for-android", version.ref = "usbSerial" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
