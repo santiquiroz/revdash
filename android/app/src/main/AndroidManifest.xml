@@ -4,7 +4,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-feature android:name="android.hardware.usb.host" android:required="false" />
 
-    <application
+    <application android:icon="@mipmap/ic_lanzador" android:roundIcon="@mipmap/ic_lanzador"
         android:allowBackup="false"
         android:label="RevDash"
         android:supportsRtl="true"
