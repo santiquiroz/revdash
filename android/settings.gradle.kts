@@ -19,3 +19,4 @@ rootProject.name = "RevDash"
 
 include(":nucleo")
 include(":app")
+include(":espejo")

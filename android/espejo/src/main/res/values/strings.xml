@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">RevDash Espejo</string>
+    <string name="duplicar">Duplicar</string>
+    <string name="detener">Detener</string>
+    <string name="activar_toques">Activar accesibilidad</string>
+    <string name="descripcion_toques">Permite controlar el celular con los toques recibidos desde el tablero.</string>
+    <string name="sin_wifi">Sin conexión Wi-Fi</string>
+    <string name="activo">activo</string>
+    <string name="inactivo">inactivo</string>
+    <string name="estado">%1$s:27183\nAccesibilidad: %2$s\nDuplicado: %3$s</string>
+    <string name="canal_captura">Duplicado de pantalla</string>
+    <string name="captura_activa">Compartiendo pantalla en el puerto 27183</string>
+    <string name="notificacion_duplicando">Duplicando la pantalla para RevDash</string>
+</resources>
