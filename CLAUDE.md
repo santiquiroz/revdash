@@ -6,7 +6,19 @@ Tablero abierto con Android Auto para la TVS Apache RTR 160 4V del dueño. Repo 
 - Plan Fase 0: `docs/superpowers/plans/2026-10-19-fase0-ingenieria-inversa.md`
 - Guía de campo: `docs/fase0/` (sondas, procedimiento, plantilla de pinout)
 
-## Estado (2026-11-01)
+## Estado (2026-11-04)
+
+- App RevDash Fase 1a (sin hardware) en `android/`: módulo `nucleo` (Kotlin puro: perfil CAN, candump,
+  estado de la moto, odómetro, alertas, RDP1) y `app` (Compose, los tres estados, modo demo que reproduce
+  una captura real en bucle). Spec `docs/superpowers/specs/2026-11-04-app-revdash-design.md`, plan
+  `docs/superpowers/plans/2026-11-04-app-fase1a.md`, reglas visuales `docs/diseno/sistema-visual.md`.
+  Comandos: `cd android && ./gradlew :nucleo:test :app:testDebugUnitTest :app:assembleDebug`; capturas de
+  pantalla con `:app:recordRoborazziDebug` (en `app/src/test/screenshots/`).
+- Cámaras y detección = Fase 3 (`docs/investigacion/camaras-ia.md`). Grabar rutas con el celular sirve desde ya
+  para probar detectores y empezar un dataset de señales colombianas.
+- Pendiente para la app: confirmar la escala de velocidad con la prueba de ruta (301 ×0,01 frente a 500 b1
+  ×0,125; en `empujando.log` dan 6,08 y 5,5 km/h de máximo), puente USB serie con el ESP32 cuando lleguen
+  los SN65HVD230, open-headunit.
 
 - Fase 0 (ingeniería inversa del conector del tablero) en curso. Las 6 tareas del plan tienen código (2026-11-01/02):
   - Guía de campo y sondas: `docs/fase0/`.
