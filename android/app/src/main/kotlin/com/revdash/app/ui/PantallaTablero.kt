@@ -64,12 +64,18 @@ import com.revdash.nucleo.Lectura
 import java.util.Locale
 
 @Composable
-fun PantallaTablero(ui: UiTablero, alCambiarModo: () -> Unit, modifier: Modifier = Modifier) {
+fun PantallaTablero(
+    ui: UiTablero,
+    alCambiarModo: () -> Unit,
+    modifier: Modifier = Modifier,
+    alAbrirEspejo: () -> Unit = {},
+) {
     Box(modifier.fillMaxSize().background(Fondo)) {
         when (ui.modo) {
-            ModoPantalla.COMPLETO -> ContenidoCompleto(ui, alCambiarModo)
+            ModoPantalla.COMPLETO -> ContenidoCompleto(ui, alCambiarModo, alAbrirEspejo)
             ModoPantalla.COLUMNA -> ContenidoColumna(ui, alCambiarModo)
             ModoPantalla.FRANJA -> ContenidoFranja(ui, alCambiarModo)
+            ModoPantalla.ESPEJO -> Unit
         }
         BordeAlerta(ui.alertas.peligro, Modifier.fillMaxSize(), ui.modo)
         ChipDashcam(ui.dashcam, Modifier.align(Alignment.TopEnd).padding(top = 14.dp, end = 16.dp))
@@ -77,7 +83,7 @@ fun PantallaTablero(ui: UiTablero, alCambiarModo: () -> Unit, modifier: Modifier
 }
 
 @Composable
-private fun ContenidoCompleto(ui: UiTablero, alCambiarModo: () -> Unit) {
+private fun ContenidoCompleto(ui: UiTablero, alCambiarModo: () -> Unit, alAbrirEspejo: () -> Unit) {
     Row(Modifier.fillMaxSize().padding(28.dp), horizontalArrangement = Arrangement.spacedBy(24.dp)) {
         Column(Modifier.weight(1.35f).fillMaxHeight(), verticalArrangement = Arrangement.SpaceBetween) {
             FilaTestigos(ui.estado)
@@ -107,7 +113,10 @@ private fun ContenidoCompleto(ui: UiTablero, alCambiarModo: () -> Unit) {
                     )
                 }
             }
-            BotonModo(ui.modo, alCambiarModo, Modifier.align(Alignment.End))
+            Row(Modifier.align(Alignment.End), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                BotonNavegacion("ESPEJO", alAbrirEspejo)
+                BotonModo(ui.modo, alCambiarModo)
+            }
         }
     }
 }
@@ -310,16 +319,24 @@ private fun BotonModo(modo: ModoPantalla, alCambiarModo: () -> Unit, modifier: M
         ModoPantalla.COMPLETO -> "2"
         ModoPantalla.COLUMNA -> "3"
         ModoPantalla.FRANJA -> "1"
+        ModoPantalla.ESPEJO -> "1"
     }
+    BotonNavegacion(
+        "VISTA $siguiente", alCambiarModo,
+        modifier.semantics { contentDescription = "Cambiar modo de pantalla" },
+    )
+}
+
+@Composable
+fun BotonNavegacion(texto: String, alPulsar: () -> Unit, modifier: Modifier = Modifier) {
     Button(
-        onClick = alCambiarModo,
-        modifier = modifier.sizeIn(minWidth = 72.dp, minHeight = 72.dp)
-            .semantics { contentDescription = "Cambiar modo de pantalla" },
+        onClick = alPulsar,
+        modifier = modifier.sizeIn(minWidth = 72.dp, minHeight = 72.dp),
         shape = RoundedCornerShape(10.dp),
         colors = ButtonDefaults.buttonColors(containerColor = Panel, contentColor = Texto),
         border = BorderStroke(1.dp, Linea),
     ) {
-        Text("VISTA $siguiente", fontFamily = Barlow, fontWeight = FontWeight.Bold, fontSize = 18.sp)
+        Text(texto, fontFamily = Barlow, fontWeight = FontWeight.Bold, fontSize = 18.sp)
     }
 }
 

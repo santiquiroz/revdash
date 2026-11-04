@@ -8,7 +8,9 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.revdash.app.demo.DemoTablero
+import com.revdash.app.espejo.PantallaEspejo
 import com.revdash.app.ui.EscalaDiseno
+import com.revdash.app.ui.ModoPantalla
 import com.revdash.app.ui.PantallaTablero
 
 class MainActivity : ComponentActivity() {
@@ -28,7 +30,13 @@ class MainActivity : ComponentActivity() {
             )
         setContent {
             val ui = vm.ui.collectAsStateWithLifecycle().value
-            EscalaDiseno { PantallaTablero(ui = ui, alCambiarModo = vm::cambiarModo) }
+            EscalaDiseno {
+                if (ui.modo == ModoPantalla.ESPEJO) {
+                    PantallaEspejo(alVolver = vm::volverAlTablero)
+                } else {
+                    PantallaTablero(ui = ui, alCambiarModo = vm::cambiarModo, alAbrirEspejo = vm::abrirEspejo)
+                }
+            }
         }
     }
 }

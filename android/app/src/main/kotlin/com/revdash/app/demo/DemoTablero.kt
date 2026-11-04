@@ -11,7 +11,7 @@ import androidx.lifecycle.viewModelScope
 import com.revdash.app.ui.ModoPantalla
 import com.revdash.app.ui.UiTablero
 import com.revdash.app.usb.hayEsp32
-import com.revdash.app.usb.lineasUsb
+import com.revdash.app.usb.lineasUsbConReintento
 import com.revdash.nucleo.Alerta
 import com.revdash.nucleo.AlertasVisibles
 import com.revdash.nucleo.EstadoDashcam
@@ -87,18 +87,31 @@ class DemoTablero(app: Application) : AndroidViewModel(app) {
         }
     }
 
+    private var modoTablero = ModoPantalla.COMPLETO
+
     fun cambiarModo() {
         modo.value =
             when (modo.value) {
                 ModoPantalla.COMPLETO -> ModoPantalla.COLUMNA
                 ModoPantalla.COLUMNA -> ModoPantalla.FRANJA
                 ModoPantalla.FRANJA -> ModoPantalla.COMPLETO
+                ModoPantalla.ESPEJO -> modoTablero
             }
+    }
+
+    fun abrirEspejo() {
+        if (modo.value == ModoPantalla.ESPEJO) return
+        modoTablero = modo.value
+        modo.value = ModoPantalla.ESPEJO
+    }
+
+    fun volverAlTablero() {
+        modo.value = modoTablero
     }
 
     private fun fuenteEstados(app: Application): Flow<EstadoMoto> =
         if (fuenteUsb) {
-            estadosDesdeRdp(lineasUsb(app), proyector, CANALES_CABLE, reloj = SystemClock::elapsedRealtime)
+            estadosDesdeRdp(lineasUsbConReintento(app), proyector, CANALES_CABLE, reloj = SystemClock::elapsedRealtime)
         } else {
             estadosEnVivo(reproductor.tramas(), proyector, reloj = SystemClock::elapsedRealtime)
         }

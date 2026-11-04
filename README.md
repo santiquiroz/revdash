@@ -5,14 +5,41 @@ Arranca con la llave mostrando todo lo que mostraba el tablero de fábrica y, cu
 a la navegación y la música del celular. Sin cajas cerradas: código, hardware y carcasa libres.
 
 [![Licencia: AGPL-3.0](https://img.shields.io/badge/licencia-AGPL--3.0-blue.svg)](LICENSE)
-![Estado: Fase 0](https://img.shields.io/badge/estado-Fase%200%20·%20ingenier%C3%ADa%20inversa-orange.svg)
-![Plataforma: Android](https://img.shields.io/badge/plataforma-Android%2011-3DDC84.svg?logo=android&logoColor=white)
+![Estado: Fase 0 + app](https://img.shields.io/badge/estado-Fase%200%20%2B%20app%20en%20desarrollo-orange.svg)
+![Plataforma: Android](https://img.shields.io/badge/plataforma-Android%2014-3DDC84.svg?logo=android&logoColor=white)
 ![Hardware: Radxa ROCK 4D](https://img.shields.io/badge/hardware-Radxa%20ROCK%204D-222.svg)
 
 <p align="center">
   <img src="docs/img/estado-1-tablero.png" width="720" alt="Maqueta del tablero de RevDash: velocidad, testigos, marcha y modo">
   <br><sub>Maqueta del diseño (no es una captura del producto todavía).</sub>
 </p>
+
+## Estado actual (noviembre de 2026)
+
+La placa y la pantalla llegan en diciembre; mientras tanto, todo lo que se puede construir sin ellas ya corre:
+
+<p align="center">
+  <img src="docs/img/app-tablero.png" width="640" alt="Captura de la app de RevDash: velocidad, RPM, testigos, marcha, temperaturas y viaje">
+  <br><sub>La app real del tablero (captura de la prueba automática a 1024×600).</sub>
+</p>
+
+| Pieza | Qué hace hoy |
+|---|---|
+| **App del tablero** ([`android/app`](android/app)) | Los tres modos de pantalla. Sin hardware reproduce en bucle una captura CAN real de la Apache; con el ESP32 por USB muestra los datos en vivo. Se ajusta a pantallas más chicas (probada en un celular). |
+| **Núcleo** ([`android/nucleo`](android/nucleo)) | Kotlin puro: decodifica el CAN con un perfil por modelo (JSON), odómetro, alertas y el protocolo del ESP32. Probado con capturas reales. |
+| **Sonda ESP32** ([`firmware/probe`](firmware/probe)) | Escucha el CAN (solo escucha), cuenta pulsos y reporta las entradas digitales por USB. |
+| **Herramientas del PC** ([`tools`](tools)) | Grabar la sonda, calibrar la velocidad contra RevScope y comparar capturas para descubrir señales. |
+| **Visión** ([`vision`](vision)) | Detector de objetos (YOLOX, Apache-2.0) sobre videos de ruta, con aceleración por GPU en Windows. Base de la dashcam. |
+| **Duplicado de pantalla** ([`android/espejo`](android/espejo)) | Prueba de concepto: la pantalla del celular en el tablero, con táctil. Sin emparejamiento todavía: solo para pruebas. |
+
+### Descargar
+
+En [Releases](https://github.com/santiquiroz/revdash/releases):
+
+- `RevDash-vX.apk`: la app del tablero. En un celular o tablet Android 10+ arranca en modo demostración.
+- `RevDash-Espejo-vX.apk`: la app compañera del duplicado (prueba de concepto).
+- `revdash-sonda-esp32-vX.bin`: el firmware de la sonda en un solo archivo:
+  `esptool.py --chip esp32 write_flash 0x0 revdash-sonda-esp32-vX.bin`.
 
 ## La historia
 
@@ -48,6 +75,8 @@ primer tornillo para aguantar agua.
 - 👂 **Solo escucha a la moto**: nunca le transmite nada a la ECU ni al ABS.
 - 🔋 **Consumo cero con la llave apagada**: se apaga limpio y después corta del todo.
 - 🔧 **Deja libre el puerto OBD** para diagnóstico y para RevScope.
+- 📱 **Duplicado de la pantalla del celular**, con táctil, para las apps que Android Auto no muestra (en desarrollo).
+- 🎥 **Dashcam adelante y atrás** con detección de vehículos y avisos por prioridad (Fase 3).
 
 ## Arquitectura
 
@@ -98,9 +127,9 @@ La humedad fue lo que mató el tablero original, así que aquí es requisito de 
 ## Hoja de ruta
 
 - [ ] **Fase 0 · Ingeniería inversa** del conector del tablero (en curso): primer pinout público de la Apache. Si el conector lleva CAN, cada señal se descubre comparando una captura en reposo con otra mientras se acciona el control (direccional, neutro, luz alta…). [Guía de campo](docs/fase0/).
-- [ ] **Fase 1 · Pantalla aparte**: la placa llega hacia el 15 de noviembre de 2026 y la pantalla hacia el 6 de diciembre.
+- [ ] **Fase 1 · Pantalla aparte**: placa y pantalla llegan en diciembre de 2026. La app ya corre sin ellas (ver Estado actual).
 - [ ] **Fase 2 · Reemplazo total**: imagen propia de Android, fuente propia y montaje en la base original.
-- [ ] **Fase 3 · Opcional**: dashcam e IA con la NPU de la placa (avisos de colisión, señales, baches).
+- [ ] **Fase 3 · Opcional**: dashcam adelante (CSI) y atrás (USB) e IA con la NPU de la placa (avisos de colisión y punto ciego, señales, semáforos).
 
 ## Familia Rev
 
@@ -115,6 +144,9 @@ La humedad fue lo que mató el tablero original, así que aquí es requisito de 
 
 - Diseño completo: [docs/superpowers/specs/2026-10-19-revdash-design.md](docs/superpowers/specs/2026-10-19-revdash-design.md)
 - Plan de la Fase 0: [docs/superpowers/plans/2026-10-19-fase0-ingenieria-inversa.md](docs/superpowers/plans/2026-10-19-fase0-ingenieria-inversa.md)
+- App del tablero: [docs/superpowers/specs/2026-11-04-app-revdash-design.md](docs/superpowers/specs/2026-11-04-app-revdash-design.md) y reglas visuales en [docs/diseno/sistema-visual.md](docs/diseno/sistema-visual.md)
+- Duplicado de pantalla: [docs/superpowers/specs/2026-11-04-duplicado-pantalla-design.md](docs/superpowers/specs/2026-11-04-duplicado-pantalla-design.md)
+- Cámaras e IA: [docs/investigacion/camaras-ia.md](docs/investigacion/camaras-ia.md); pantallas: [docs/investigacion/pantallas.md](docs/investigacion/pantallas.md)
 
 ## Contribuir
 

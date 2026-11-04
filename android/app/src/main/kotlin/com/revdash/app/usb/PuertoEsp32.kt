@@ -14,14 +14,20 @@ import com.hoho.android.usbserial.driver.UsbSerialPort
 import com.hoho.android.usbserial.driver.UsbSerialProber
 import com.hoho.android.usbserial.util.SerialInputOutputManager
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.flow.buffer
 import kotlinx.coroutines.channels.ProducerScope
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import java.io.IOException
 import java.util.UUID
+import java.util.concurrent.atomic.AtomicBoolean
 
 fun lineasUsb(contexto: Context, baudios: Int = 921600): Flow<String> = callbackFlow {
     val app = contexto.applicationContext
@@ -38,7 +44,17 @@ fun lineasUsb(contexto: Context, baudios: Int = 921600): Flow<String> = callback
         sesion.terminarPorError(error)
     }
     awaitClose { sesion.cerrar() }
-}.flowOn(Dispatchers.IO)
+    // Al abrir llega una ráfaga; perder líneas viejas es mejor que cortar la conexión.
+}.buffer(TAMANO_BUFFER_LINEAS, BufferOverflow.DROP_OLDEST).flowOn(Dispatchers.IO)
+
+fun lineasUsbConReintento(contexto: Context, esperaMs: Long = 1000): Flow<String> = flow {
+    while (true) {
+        emitAll(lineasUsb(contexto))
+        delay(esperaMs)
+    }
+}
+
+private val permisoUsbNegado = AtomicBoolean(false)
 
 fun hayEsp32(contexto: Context): Boolean =
     primerPuerto(contexto.getSystemService(UsbManager::class.java)) != null
@@ -73,6 +89,7 @@ private class SesionUsb(
         override fun onReceive(contexto: Context, intento: Intent) {
             if (intento.action != accionPermiso) return
             if (!intento.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
+                permisoUsbNegado.set(true)
                 salida.close()
                 return
             }
@@ -81,7 +98,13 @@ private class SesionUsb(
     }
 
     fun iniciar() = synchronized(bloqueo) {
-        if (administrador.hasPermission(puerto.driver.device)) abrirPuerto() else pedirPermiso()
+        if (administrador.hasPermission(puerto.driver.device)) {
+            abrirPuerto()
+        } else if (permisoUsbNegado.get()) {
+            salida.close()
+        } else {
+            pedirPermiso()
+        }
     }
 
     private fun pedirPermiso() {
@@ -154,6 +177,7 @@ private class SesionUsb(
 }
 
 private const val MUESTREO_REGISTRO = 200L
+private const val TAMANO_BUFFER_LINEAS = 1024
 
 private class SeparadorLineas(private val emitir: (String) -> Unit) {
     private val pendiente = StringBuilder()

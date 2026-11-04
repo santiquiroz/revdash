@@ -5,7 +5,7 @@ import com.revdash.nucleo.EstadoDashcam
 import com.revdash.nucleo.EstadoMoto
 import com.revdash.nucleo.Odometro
 
-enum class ModoPantalla { COMPLETO, COLUMNA, FRANJA }
+enum class ModoPantalla { COMPLETO, COLUMNA, FRANJA, ESPEJO }
 
 data class UiTablero(
     val estado: EstadoMoto = EstadoMoto(),

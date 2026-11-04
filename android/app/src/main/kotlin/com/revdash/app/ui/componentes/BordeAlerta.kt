@@ -78,6 +78,7 @@ private fun alturaEtiqueta(modo: ModoPantalla) =
         ModoPantalla.COMPLETO -> 88.dp
         ModoPantalla.COLUMNA -> 8.dp
         ModoPantalla.FRANJA -> 80.dp
+        ModoPantalla.ESPEJO -> 16.dp
     }
 
 @Composable

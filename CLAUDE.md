@@ -14,6 +14,11 @@ Tablero abierto con Android Auto para la TVS Apache RTR 160 4V del dueño. Repo 
   `docs/superpowers/plans/2026-11-04-app-fase1a.md`, reglas visuales `docs/diseno/sistema-visual.md`.
   Comandos: `cd android && ./gradlew :nucleo:test :app:testDebugUnitTest :app:assembleDebug`; capturas de
   pantalla con `:app:recordRoborazziDebug` (en `app/src/test/screenshots/`).
+- Duplicado de pantalla (prueba de concepto): app compañera `android/espejo` (servidor RDE1, sin autenticación) y
+  receptor dentro de la app (botón ESPEJO, conecta a `127.0.0.1:27183` por ahora) o en el PC
+  (`tools/espejo_receptor.py`). Spec `docs/superpowers/specs/2026-11-04-duplicado-pantalla-design.md`.
+- Releases: APK de release firmadas con la clave de depuración (como RevScope) + firmware de la sonda unido con
+  `esptool merge_bin` (se flashea en 0x0). CI en `.github/workflows/ci.yml` (sin verifyRoborazzi: Linux cambia los píxeles).
 - Cámaras y detección = Fase 3 (`docs/investigacion/camaras-ia.md`). Grabar rutas con el celular sirve desde ya
   para probar detectores y empezar un dataset de señales colombianas.
 - Pendiente para la app: confirmar la escala de velocidad con la prueba de ruta (301 ×0,01 frente a 500 b1
