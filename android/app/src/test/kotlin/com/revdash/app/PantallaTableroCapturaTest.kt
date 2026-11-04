@@ -3,6 +3,7 @@ package com.revdash.app
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onRoot
 import com.github.takahirom.roborazzi.captureRoboImage
+import com.revdash.app.ui.EscalaDiseno
 import com.revdash.app.ui.ModoPantalla
 import com.revdash.app.ui.PantallaTablero
 import com.revdash.app.ui.UiTablero
@@ -55,6 +56,13 @@ class PantallaTableroCapturaTest {
     fun completo() {
         compose.setContent { PantallaTablero(uiBase(), {}) }
         compose.onRoot().captureRoboImage("src/test/screenshots/completo.png")
+    }
+
+    @Test
+    @Config(qualifiers = "w832dp-h384dp-land-xxxhdpi")
+    fun completo_celular() {
+        compose.setContent { EscalaDiseno { PantallaTablero(uiBase(), {}) } }
+        compose.onRoot().captureRoboImage("src/test/screenshots/completo_celular.png")
     }
 
     @Test

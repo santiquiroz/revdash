@@ -61,7 +61,9 @@ private class SesionUsb(
     private var solicitud: PendingIntent? = null
     private var conexion: UsbDeviceConnection? = null
     private var lector: SerialInputOutputManager? = null
+    private var recibidas = 0L
     private val lineas = SeparadorLineas { linea ->
+        if (recibidas++ % MUESTREO_REGISTRO == 0L) Log.d("PuertoEsp32", "línea $recibidas: $linea")
         val envio = salida.trySend(linea)
         if (envio.isFailure && !envio.isClosed) {
             terminarPorError(IOException("No se pudo entregar una línea USB"))
@@ -110,6 +112,7 @@ private class SesionUsb(
         val nuevoLector = SerialInputOutputManager(puerto, escucha())
         lector = nuevoLector
         nuevoLector.start()
+        Log.i("PuertoEsp32", "Puerto abierto a $baudios baudios")
     }
 
     private fun configurarPuerto() {
@@ -149,6 +152,8 @@ private class SesionUsb(
         }
     }
 }
+
+private const val MUESTREO_REGISTRO = 200L
 
 private class SeparadorLineas(private val emitir: (String) -> Unit) {
     private val pendiente = StringBuilder()

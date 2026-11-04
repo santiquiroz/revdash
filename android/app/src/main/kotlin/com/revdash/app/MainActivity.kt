@@ -8,6 +8,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.revdash.app.demo.DemoTablero
+import com.revdash.app.ui.EscalaDiseno
 import com.revdash.app.ui.PantallaTablero
 
 class MainActivity : ComponentActivity() {
@@ -26,7 +27,8 @@ class MainActivity : ComponentActivity() {
                 or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
             )
         setContent {
-            PantallaTablero(ui = vm.ui.collectAsStateWithLifecycle().value, alCambiarModo = vm::cambiarModo)
+            val ui = vm.ui.collectAsStateWithLifecycle().value
+            EscalaDiseno { PantallaTablero(ui = ui, alCambiarModo = vm::cambiarModo) }
         }
     }
 }
