@@ -6,3 +6,4 @@ __pycache__/
 
 # Capturas reales usadas como datos de prueba y del modo demo de la app.
 !android/nucleo/src/main/resources/capturas/
+vision/modelos/*.onnx
