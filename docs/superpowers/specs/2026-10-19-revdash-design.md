@@ -51,7 +51,7 @@ depender de una caja cerrada; todo se publica como código libre con documentaci
 - Apple CarPlay: requiere chip de certificación de Apple, incompatible con un proyecto libre; el teléfono
   del dueño es Android, así que se usa Android Auto.
 - Reemplazar SmartXonnect (el módulo está en el tablero muerto).
-- Android más nuevo que 11 en la primera versión (ver §9, subproyecto opcional).
+- Android más nuevo que el 14 oficial de la ROCK 4D en la primera versión (ver §9, subproyecto opcional).
 
 ## 5. Anti-objetivos (fallaría aunque "funcione")
 
@@ -188,6 +188,16 @@ depender de una caja cerrada; todo se publica como código libre con documentaci
   fuente provisional es el ESP32 por USB (§11); en Fase 2 es un servicio de sistema en la imagen propia
   con permisos sobre GPIO/UART (Android no deja a las apps abrir esos dispositivos sin root/permisos de
   sistema; con imagen propia se resuelve limpio).
+  - Hallazgo de la Fase 0 (2026-11-02): casi todo viaja por el CAN del conector del tablero (marcha, RPM,
+    acelerador, temperaturas, pata, embrague, kill switch, motor en marcha, velocidad candidata). Por cable
+    quedan las direccionales, la luz alta, los frenos y el combustible. El servicio es sobre todo un
+    decodificador de CAN guiado por el perfil `PerfilCan` v1 (el mismo formato de RevScope). App: spec
+    `2026-11-04-app-revdash-design.md`.
+- **Dashcam y detección (Fase 3)**: cámara delantera por CSI y trasera USB (la cinta CSI no llega a la
+  cola), grabación en bucle por segmentos que sobreviven al corte de llave, y avisos de vehículo
+  acercándose por detrás o en el punto ciego, de choque frontal y de límite de velocidad, con la NPU. Sin
+  modo parqueo (anti-objetivo de consumo cero). Investigación: `docs/investigacion/camaras-ia.md`; forma de
+  las alertas: `docs/diseno/sistema-visual.md`.
 - **Gestión térmica**: con el NTC, bajar el brillo de la luz de fondo por encima de ~60 °C y apagarla
   (dejando el sistema vivo) cerca de 65-70 °C, que es el límite de la Riverdi.
 - **Odómetro y trip propios**: el tablero original ya no cuenta; RevDash calcula distancia a partir de la
@@ -196,8 +206,9 @@ depender de una caja cerrada; todo se publica como código libre con documentaci
 
 ### 8.3 Imagen propia de Android (Fase 2)
 
-Base: rama `Android11_Radxa_rk12` / `rockchip-r-release.xml` de `radxa/manifests` (hay reportes de errores
-de compilación con clang nuevo: hay que corregir). Requiere ~16 GB RAM y ~250 GB de disco (WSL2/Docker en el
+Base: el Android 14 de Radxa para la ROCK 4D (código fuente y guía de compilación publicados, target
+`rk3576_rock_4d-userdebug`; ver `docs/investigacion/placa-sbc.md`). La base anterior (`Android11_Radxa_rk12`)
+era de la Zero 3W y quedó descartada con el cambio de placa. Requiere ~16 GB RAM y ~250 GB de disco (WSL2/Docker en el
 PC del dueño). Contenido: RevDash como launcher, open-headunit preinstalado, servicio de señales con
 permisos, sin apps sobrantes, arranque recortado, actualizaciones OTA por Wi-Fi. Todo reproducible y
 documentado en el repo. La imagen personal del dueño puede traer open-headunit preinstalado; los scripts
@@ -238,6 +249,15 @@ publicados lo descargan de su repo al compilar y no se publican imágenes que lo
 - Imagen propia de Android con el servicio de señales; placa de interfaz que reemplaza al ESP32.
 - Carcasa definitiva sobre la montura original del tablero.
 - Actualizaciones OTA.
+
+### Fase 3 — Dashcam y detección
+
+- Primero la dashcam sola: dos cámaras, grabación en bucle y clips protegidos (frenada fuerte, caída avisada
+  por RevScope, toque en pantalla).
+- Después la detección en modo sombra (registra sin mostrar) hasta medir los falsos positivos en rutas
+  reales; solo entonces se encienden las alertas.
+- Dataset propio de señales colombianas a partir de las grabaciones (los públicos no son comerciales).
+- Detalle y orden de las funciones: `docs/investigacion/camaras-ia.md`.
 
 ### Subproyecto opcional — Android más nuevo
 

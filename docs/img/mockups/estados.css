@@ -14,3 +14,11 @@ body{background:var(--bg);color:var(--txt);font-family:"Segoe UI",system-ui,sans
 .ticks{display:flex;justify-content:space-between;color:var(--mut);font-size:13px;margin-top:6px}
 .aa{background:repeating-linear-gradient(45deg,#16202b,#16202b 14px,#1a2633 14px,#1a2633 28px);border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#7f9bb6;font-weight:700;font-size:22px;gap:8px}
 .aa small{font-size:14px;font-weight:500;color:#5f7a94}
+.p1{position:absolute;background:var(--red);display:flex;align-items:center;justify-content:center;color:#000;font-weight:900;letter-spacing:.08em;z-index:5}
+.p1-izq{left:0;top:0;bottom:0;width:16px}
+.p1-tag{position:absolute;background:var(--red);color:#000;font-weight:900;font-size:22px;letter-spacing:.08em;padding:8px 14px;border-radius:0 10px 10px 0;z-index:6}
+.limite{display:inline-flex;align-items:center;justify-content:center;width:64px;height:64px;border-radius:50%;background:#fff;border:8px solid var(--red);color:#000;font-weight:900;font-size:26px}
+.excede{outline:4px solid var(--amber);outline-offset:6px;border-radius:12px}
+.rec{position:absolute;top:14px;right:16px;display:flex;align-items:center;gap:8px;background:var(--panel);border-radius:10px;padding:6px 12px;font-size:15px;font-weight:700;color:var(--mut);letter-spacing:.08em;z-index:4}
+.rec b{width:12px;height:12px;border-radius:50%;background:var(--red);display:inline-block}
+.sindato{color:var(--mut)}.sindato small{color:var(--amber);font-size:13px;letter-spacing:.1em;font-weight:700}

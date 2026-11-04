@@ -3,3 +3,6 @@ capturas/
 .pio/
 __pycache__/
 .pytest_cache/
+
+# Capturas reales usadas como datos de prueba y del modo demo de la app.
+!android/nucleo/src/main/resources/capturas/
