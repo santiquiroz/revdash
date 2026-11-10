@@ -99,6 +99,24 @@ python tools/diff_can.py --base base.rdp --action <accion>.rdp
 Registra los IDs y bytes que cambian. La herramienta es una ayuda para acotar
 tramas, no una identificación concluyente del significado de cada byte.
 
+#### Captura guiada (recomendada)
+
+Para repetir una acción varias veces y encontrar bits, bytes CAN o entradas
+digitales que cambian en todas las repeticiones:
+
+```powershell
+python tools/capture.py --port COM6 --out freno-trasero.rdp --guion freno-trasero --ciclos 5 --fase-s 5
+python tools/correlar_fases.py freno-trasero.rdp
+```
+
+El pitido agudo indica accionar y mantener; el grave, soltar. La primera fase
+es una referencia sin tocar nada. El margen inicial descarta el tiempo de
+reacción después de cada aviso. Un bit o entrada reportado siguió las cinco
+repeticiones; contadores y checksums quedan fuera solos si cambian dentro de
+las fases. Sirve igual para entradas digitales con back-probing de luces,
+direccionales y frenos, y para CAN. `diff_can.py` sigue disponible como
+alternativa rápida para comparar una base con una sola acción.
+
 ### Paso 7 — validar con el ESP32 y RevScope
 
 Cuando exista el firmware (Task 3), ajusta `config.h` con el pinout encontrado. Graba un trayecto con RevScope
